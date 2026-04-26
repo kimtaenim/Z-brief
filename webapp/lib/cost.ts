@@ -10,6 +10,8 @@ export interface CostBreakdown {
   model: string;
   input_tokens: number;
   output_tokens: number;
+  cache_creation_tokens: number;
+  cache_read_tokens: number;
   usd: number;
 }
 
@@ -39,13 +41,19 @@ function priceFor(model: string): { input: number; output: number } {
 
 export function computeCost(usage: ModelUsage): CostBreakdown {
   const p = priceFor(usage.model);
+  const cacheCreation = usage.cache_creation_input_tokens ?? 0;
+  const cacheRead = usage.cache_read_input_tokens ?? 0;
   const usd =
     (usage.input_tokens * p.input) / 1_000_000 +
+    (cacheCreation * p.input * 1.25) / 1_000_000 +
+    (cacheRead * p.input * 0.1) / 1_000_000 +
     (usage.output_tokens * p.output) / 1_000_000;
   return {
     model: usage.model,
     input_tokens: usage.input_tokens,
     output_tokens: usage.output_tokens,
+    cache_creation_tokens: cacheCreation,
+    cache_read_tokens: cacheRead,
     usd,
   };
 }
@@ -53,7 +61,14 @@ export function computeCost(usage: ModelUsage): CostBreakdown {
 export function summarizeCost(usages: ModelUsage[]): CostSummary {
   const per_call = usages.map(computeCost);
   const total_usd = per_call.reduce((s, c) => s + c.usd, 0);
-  const total_input_tokens = usages.reduce((s, u) => s + u.input_tokens, 0);
+  const total_input_tokens = usages.reduce(
+    (s, u) =>
+      s +
+      u.input_tokens +
+      (u.cache_creation_input_tokens ?? 0) +
+      (u.cache_read_input_tokens ?? 0),
+    0,
+  );
   const total_output_tokens = usages.reduce((s, u) => s + u.output_tokens, 0);
   return {
     per_call,

@@ -57,7 +57,7 @@ function articlesBlock(name: string, articles: Article[]): string {
   const lines = [`## ${name}`];
   for (const a of articles) {
     lines.push(`- (${a.language}) ${a.title} | ${a.source} | ${a.url}`);
-    if (a.summary) lines.push(`  요약: ${a.summary.slice(0, 300)}`);
+    if (a.summary) lines.push(`  요약: ${a.summary.slice(0, 200)}`);
   }
   return lines.join("\n");
 }
@@ -111,8 +111,14 @@ export async function summarizeBrief(
 
   const resp = await client.messages.create({
     model: MODELS.summarize,
-    max_tokens: 3000,
-    system: FINAL_SYSTEM,
+    max_tokens: 1800,
+    system: [
+      {
+        type: "text",
+        text: FINAL_SYSTEM,
+        cache_control: { type: "ephemeral" },
+      },
+    ],
     messages: [{ role: "user", content: blocks.join("\n") }],
   });
 
@@ -127,6 +133,8 @@ export async function summarizeBrief(
       model: MODELS.summarize,
       input_tokens: resp.usage.input_tokens,
       output_tokens: resp.usage.output_tokens,
+      cache_creation_input_tokens: resp.usage.cache_creation_input_tokens ?? undefined,
+      cache_read_input_tokens: resp.usage.cache_read_input_tokens ?? undefined,
     },
   };
 }

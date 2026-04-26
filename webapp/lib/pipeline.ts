@@ -125,10 +125,37 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
       selectedSections: selected,
       userInterest,
     });
-    usages.push(
-      { model: "claude-haiku-4-5-20251001", input_tokens: 0, output_tokens: 0 },
-      { model: "claude-sonnet-4-6", input_tokens: 0, output_tokens: 0 },
-    );
+    const clusterSelected = selected.filter((s) => s !== "overview").length;
+    const triageCalls = clusterSelected;
+    const triageInputBase = 250;
+    const triageInputCached = 200;
+    const triageOutput = 120;
+    const summarizeInput = 400 + 600 * (selected.length / SECTION_ORDER.length);
+    const summarizeCacheCreation = 700;
+    const summarizeOutput = Math.round(250 * selected.length);
+
+    if (triageCalls > 0) {
+      usages.push({
+        model: "claude-haiku-4-5-20251001",
+        input_tokens: triageInputBase,
+        output_tokens: triageOutput,
+        cache_creation_input_tokens: 250,
+      });
+      for (let i = 1; i < triageCalls; i++) {
+        usages.push({
+          model: "claude-haiku-4-5-20251001",
+          input_tokens: triageInputCached,
+          output_tokens: triageOutput,
+          cache_read_input_tokens: 250,
+        });
+      }
+    }
+    usages.push({
+      model: "claude-sonnet-4-6",
+      input_tokens: Math.round(summarizeInput),
+      output_tokens: summarizeOutput,
+      cache_creation_input_tokens: summarizeCacheCreation,
+    });
     const cleaned = sanitize(raw, cfg.forbidden_patterns?.banned_words ?? ["추천"]);
     fullMarkdown = cleaned.text;
     sanitizeReport = cleaned.report;

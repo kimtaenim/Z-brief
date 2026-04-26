@@ -22,6 +22,8 @@ function aggregate(per_call: CostBreakdown[]): CostBreakdown[] {
     if (cur) {
       cur.input_tokens += c.input_tokens;
       cur.output_tokens += c.output_tokens;
+      cur.cache_creation_tokens += c.cache_creation_tokens;
+      cur.cache_read_tokens += c.cache_read_tokens;
       cur.usd += c.usd;
     } else {
       map.set(k, { ...c, model: k });
@@ -47,17 +49,25 @@ export function CostCard({ cost, mode }: Props) {
         )}
       </div>
       <ul className="space-y-1.5 text-[13px]">
-        {lines.map((c) => (
-          <li key={c.model} className="flex items-baseline justify-between gap-3">
-            <span className="text-zinc-700">
-              {c.model}
-              <span className="ml-2 text-zinc-400">
-                in {formatTokens(c.input_tokens)} · out {formatTokens(c.output_tokens)}
+        {lines.map((c) => {
+          const hasCache = c.cache_creation_tokens > 0 || c.cache_read_tokens > 0;
+          return (
+            <li key={c.model} className="flex items-baseline justify-between gap-3">
+              <span className="text-zinc-700">
+                {c.model}
+                <span className="ml-2 text-zinc-400">
+                  in {formatTokens(c.input_tokens)} · out {formatTokens(c.output_tokens)}
+                  {hasCache && (
+                    <span className="ml-1 text-blue-500">
+                      · cache {formatTokens(c.cache_read_tokens)}↓ {formatTokens(c.cache_creation_tokens)}↑
+                    </span>
+                  )}
+                </span>
               </span>
-            </span>
-            <span className="tabular-nums text-zinc-500">{formatUsd(c.usd)}</span>
-          </li>
-        ))}
+              <span className="tabular-nums text-zinc-500">{formatUsd(c.usd)}</span>
+            </li>
+          );
+        })}
       </ul>
       <div className="mt-3 flex items-baseline justify-between border-t border-zinc-100 pt-3">
         <span className="text-[13px] font-medium text-zinc-700">

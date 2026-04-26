@@ -67,7 +67,13 @@ export async function triageCluster(
   const resp = await client.messages.create({
     model: MODELS.triage,
     max_tokens: 512,
-    system: TRIAGE_SYSTEM,
+    system: [
+      {
+        type: "text",
+        text: TRIAGE_SYSTEM,
+        cache_control: { type: "ephemeral" },
+      },
+    ],
     messages: [{ role: "user", content: userPrompt }],
   });
 
@@ -85,6 +91,8 @@ export async function triageCluster(
       model: MODELS.triage,
       input_tokens: resp.usage.input_tokens,
       output_tokens: resp.usage.output_tokens,
+      cache_creation_input_tokens: resp.usage.cache_creation_input_tokens ?? undefined,
+      cache_read_input_tokens: resp.usage.cache_read_input_tokens ?? undefined,
     },
   };
 }
