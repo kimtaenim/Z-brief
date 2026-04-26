@@ -1,0 +1,210 @@
+global:
+  search_window_hours: 48
+  results_per_cluster: 5
+  llm_triage: claude-haiku-4-5-20251001
+  llm_final: claude-sonnet-4-6
+  cache_ttl_minutes: 60
+  default_language: ko
+  english_handling: korean_summary_with_term_in_parens
+  company:
+    name: 정원엔시스
+    related: [에이아이네이션, 바스코ICT, 젠시스, AX707]
+
+clusters:
+  - id: onprem_ai
+    name: 온프레미스AI
+    keywords_ko:
+      - 온프레미스AI
+      - 프라이빗LLM
+      - AI 어플라이언스
+      - 자체 GPU 서버
+      - 소버린 AI
+    keywords_en:
+      - on-premise AI
+      - private LLM
+      - sovereign AI
+      - AI appliance
+      - self-hosted LLM
+    sources:
+      - 전자신문
+      - 디지털타임스
+      - 한국경제
+      - ZDNet Korea
+      - IDC
+      - Gartner
+    rss_feeds: []
+    focus: 도입사례, GPU·서버 가격, 보안·규제
+
+  - id: physical_ai
+    name: 피지컬AI
+    keywords_ko:
+      - 피지컬AI
+      - 로봇
+      - 스마트팩토리
+      - 비전 AI
+      - 산업 자동화
+    keywords_en:
+      - physical AI
+      - embodied AI
+      - robotics
+      - smart factory
+      - machine vision
+      - NVIDIA Cosmos
+    sources:
+      - IEEE Spectrum Robotics
+      - Robohub
+      - NVIDIA Blog
+    rss_feeds:
+      - https://www.irobotnews.com/rss/S1N1.xml
+      - https://www.irobotnews.com/rss/S1N2.xml
+      - https://www.irobotnews.com/rss/allArticle.xml
+      - https://www.therobotreport.com/feed
+    focus: 신모델, 도입, 투자
+
+  - id: vertical_ai
+    name: 버티컬AI
+    keywords_ko:
+      - 의료AI
+      - 제조AI
+      - 공공AI
+      - 출판AI
+      - 법률AI
+      - 금융AI
+      - 교육AI
+      - 언론AI
+      - 뉴스룸AI
+      - 버티컬AI
+    keywords_en:
+      - vertical AI
+      - medical AI
+      - legal AI
+      - manufacturing AI
+      - public sector AI
+      - edtech AI
+      - newsroom AI
+      - AI in journalism
+      - domain-specific LLM
+    sources:
+      - aitimes.kr
+      - aitimes.com
+      - newstheai.com
+      - 디지털데일리
+      - 청년의사
+      - 의학신문
+      - 메디게이트뉴스
+      - 헬로티
+      - 인더스트리뉴스
+      - 미디어오늘
+      - 기자협회보
+      - PD저널
+      - 법률신문
+      - 한국교육신문
+      - MIT Tech Review
+      - Nieman Lab
+    rss_feeds:
+      - https://www.mediatoday.co.kr/rss/allArticle.xml
+      - https://venturebeat.com/category/ai/feed/
+    focus: 인허가·임상, 도입사례, 매출 영향, 정부 정책, 뉴스룸 워크플로우
+
+  - id: security_pqc
+    name: 보안과PQC
+    keywords_ko:
+      - 사이버보안
+      - AI보안
+      - AI해킹
+      - 제로데이
+      - 양자내성암호
+      - PQC
+    keywords_en:
+      - cybersecurity
+      - AI security
+      - prompt injection
+      - zero-day
+      - post-quantum cryptography
+      - quantum-safe
+      - NIST PQC
+    sources:
+      - 보안뉴스
+      - 데일리시큐
+      - 디지털데일리 보안
+      - ZDNet Korea 보안
+      - KISA
+      - 과기정통부
+      - NIST
+      - AI타임스
+      - 인공지능신문
+      - Anthropic blog
+      - OpenAI safety
+      - BleepingComputer
+      - The Hacker News
+      - Krebs on Security
+      - NIST PQC
+      - IBM Research
+      - ETRI
+    rss_feeds: []
+    focus: 침해사고, AI 모델 보안 위협, 표준 진척, 의무화, PoC, 정부 대응
+
+  - id: valuation
+    name: 밸류에이션
+    keywords_ko:
+      - AI 인프라 밸류에이션
+      - 클라우드 MSP
+      - 메가존클라우드
+      - 베스핀글로벌
+      - 코스닥 기술특례
+      - AI IPO
+      - AI M&A
+    keywords_en:
+      - AI infrastructure valuation
+      - cloud MSP
+      - managed service provider
+      - hyperscaler capex
+      - AI M&A
+      - AI IPO
+    peers_kr:
+      - 메가존클라우드
+      - 베스핀글로벌
+      - 케이아이엔엑스
+      - 가비아
+      - 효성ITX
+      - 데이타솔루션
+      - 솔트룩스
+      - 셀바스AI
+      - 마음AI
+    peers_global:
+      - Equinix
+      - Digital Realty
+      - Snowflake
+      - Palantir
+    sources:
+      - Bloomberg
+      - FT
+      - 한국경제
+      - 매일경제
+      - 더벨
+      - 인베스트조선
+      - 한국경제 마켓인사이트
+      - 한국거래소 공시
+      - 금융위
+      - 딜로이트
+      - 삼정KPMG
+      - 삼일KPMG
+      - 증권사 IT 리포트
+    rss_feeds: []
+    focus: 멀티플 변동, MSP·IDC군 비교, M&A, 기술특례, 정원엔시스 비교 포지션
+
+forbidden_patterns:
+  description: 출력 본문에서 절대 등장 금지. render.py에서 정규식 검사.
+  literal:
+    - "—"
+    - "~"
+  regex:
+    - "^-{3,}$"
+    - "^={3,}$"
+    - "^\\*{3,}$"
+  banned_words:
+    - 추천
+  emoji_block: true
+  replacements:
+    "—": "-"
+    "~": "-"
