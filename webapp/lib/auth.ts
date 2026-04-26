@@ -6,7 +6,12 @@ const COOKIE_TTL = 60 * 60 * 24;
 const DAY_SECONDS = 60 * 60 * 24;
 
 let redis: Redis | null = null;
-const memCounter = new Map<string, { count: number; resetAt: number }>();
+
+const G = globalThis as unknown as {
+  __zbriefMemCounter?: Map<string, { count: number; resetAt: number }>;
+};
+const memCounter: Map<string, { count: number; resetAt: number }> =
+  G.__zbriefMemCounter ?? (G.__zbriefMemCounter = new Map());
 
 function getRedis(): Redis | null {
   if (redis) return redis;

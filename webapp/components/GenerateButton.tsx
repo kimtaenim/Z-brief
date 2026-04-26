@@ -2,12 +2,27 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/Button";
+import { recordCumulativeCost } from "@/components/CostFooter";
+import type { CostSummary } from "@/lib/cost";
+import type { SectionId } from "@/lib/types";
 
 interface Props {
+  sections: SectionId[];
+  userInterest: string;
+  disabled?: boolean;
   onCreated?: () => void;
 }
 
-export function GenerateButton({ onCreated }: Props) {
+interface GenerateResponse {
+  id: string;
+  mode: "live" | "mock";
+  cost: CostSummary;
+  remaining?: number;
+  limit?: number;
+}
+
+export function GenerateButton({ sections, userInterest, disabled, onCreated }: Props) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +31,14 @@ export function GenerateButton({ onCreated }: Props) {
     setPending(true);
     setError(null);
     try {
-      const res = await fetch("/api/generate", { method: "POST" });
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          sections,
+          userInterest: userInterest.trim() || undefined,
+        }),
+      });
       if (res.status === 401) {
         setError("로그인이 필요합니다. 페이지를 새로고침 해주세요.");
         return;
@@ -30,7 +52,8 @@ export function GenerateButton({ onCreated }: Props) {
         setError(`생성 실패: ${data.detail ?? res.statusText}`);
         return;
       }
-      const data = (await res.json()) as { id: string };
+      const data = (await res.json()) as GenerateResponse;
+      if (data.cost?.total_krw) recordCumulativeCost(data.cost.total_krw);
       onCreated?.();
       router.push(`/result/${data.id}`);
     } catch (err) {
@@ -42,17 +65,24 @@ export function GenerateButton({ onCreated }: Props) {
 
   return (
     <div>
-      <button
+      <Button
         type="button"
+        size="lg"
         onClick={handle}
-        disabled={pending}
-        className="group flex w-full items-center justify-center gap-3 rounded-3xl bg-mint-deep px-6 py-5 text-[16px] font-medium text-white shadow-card transition duration-200 ease-apple hover:bg-mint-bright active:scale-[0.99] disabled:opacity-60 sm:py-6 sm:text-[17px]"
+        disabled={disabled || pending || sections.length === 0}
+        className="w-full"
       >
         {pending ? <Spinner /> : <SparkIcon />}
-        <span>{pending ? "생성 중… 1~2분 걸립니다" : "지금 생성"}</span>
-      </button>
+        <span>
+          {pending
+            ? "생성 중… 1~2분 걸립니다"
+            : sections.length === 0
+            ? "섹션을 1개 이상 선택하세요"
+            : `지금 생성 (${sections.length}개 섹션)`}
+        </span>
+      </Button>
       {error && (
-        <p className="mt-3 rounded-2xl bg-white px-4 py-3 text-[13px] text-danger ring-1 ring-border-soft">
+        <p className="mt-3 rounded-2xl bg-red-50 px-4 py-3 text-[13px] text-red-700 ring-1 ring-red-100">
           {error}
         </p>
       )}

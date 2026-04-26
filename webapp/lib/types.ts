@@ -1,3 +1,5 @@
+import type { CostSummary, ModelUsage } from "./cost";
+
 export interface Article {
   cluster_id: string;
   title: string;
@@ -60,16 +62,37 @@ export interface ClusterRunOutput {
   articles: Article[];
 }
 
+export type SectionId =
+  | "overview"
+  | "onprem_ai"
+  | "physical_ai"
+  | "vertical_ai"
+  | "security_pqc"
+  | "valuation";
+
+export interface SectionContent {
+  id: SectionId;
+  name: string;
+  markdown: string;
+  selected: boolean;
+}
+
 export interface BriefRecord {
   id: string;
   createdAt: string;
   dateKst: string;
-  markdown: string;
+  timeKst: string;
+  sections: SectionContent[];
+  fullMarkdown: string;
   meta: {
     mode: "live" | "mock";
     feedReports: FetchReport[];
     clusterCounts: Record<string, number>;
     sanitizeReport?: { replaced: Record<string, number>; violations: string[] };
+    selectedSections: SectionId[];
+    userInterest: string | null;
+    usages: ModelUsage[];
+    cost: CostSummary;
   };
 }
 
@@ -79,4 +102,37 @@ export interface RecentSummary {
   dateKst: string;
   preview: string;
   mode: "live" | "mock";
+  costKrw: number;
 }
+
+export interface GenerateRequest {
+  sections: SectionId[];
+  userInterest?: string;
+}
+
+export const SECTION_ORDER: SectionId[] = [
+  "overview",
+  "onprem_ai",
+  "physical_ai",
+  "vertical_ai",
+  "security_pqc",
+  "valuation",
+];
+
+export const SECTION_LABEL: Record<SectionId, string> = {
+  overview: "종합",
+  onprem_ai: "온프레미스AI",
+  physical_ai: "피지컬AI",
+  vertical_ai: "버티컬AI",
+  security_pqc: "보안과PQC",
+  valuation: "밸류에이션",
+};
+
+export const SECTION_DESCRIPTION: Record<SectionId, string> = {
+  overview: "오늘의 정원엔시스 + 핵심 기사 + 총평",
+  onprem_ai: "프라이빗 LLM, AI 어플라이언스, 소버린 AI",
+  physical_ai: "로봇, 스마트팩토리, 비전 AI",
+  vertical_ai: "의료·법률·언론·교육 등 도메인 LLM",
+  security_pqc: "사이버 보안, AI 보안, 양자내성암호",
+  valuation: "AI 인프라 멀티플, MSP·IDC, M&A·IPO",
+};

@@ -1,5 +1,6 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { getAnthropic, MODELS } from "./anthropic";
+import type { ModelUsage } from "./cost";
 import type { Article } from "./types";
 
 const TRIAGE_SYSTEM = `당신은 한국 IR 브리핑용 1차 추리기입니다.
@@ -42,12 +43,22 @@ function parsePicks(text: string, target: number, maxIdx: number): { index: numb
   return out;
 }
 
+export interface TriageResult {
+  articles: Article[];
+  usage: ModelUsage;
+}
+
 export async function triageCluster(
   clusterId: string,
   articles: Article[],
   target = 3,
-): Promise<Article[]> {
-  if (articles.length === 0) return [];
+): Promise<TriageResult> {
+  if (articles.length === 0) {
+    return {
+      articles: [],
+      usage: { model: MODELS.triage, input_tokens: 0, output_tokens: 0 },
+    };
+  }
   const client = getAnthropic();
   if (!client) throw new Error("ANTHROPIC_API_KEY not set");
 
@@ -66,5 +77,14 @@ export async function triageCluster(
     .join("");
 
   const picks = parsePicks(text, target, articles.length);
-  return picks.map((p) => articles[p.index]).filter(Boolean);
+  const selected = picks.map((p) => articles[p.index]).filter(Boolean);
+
+  return {
+    articles: selected,
+    usage: {
+      model: MODELS.triage,
+      input_tokens: resp.usage.input_tokens,
+      output_tokens: resp.usage.output_tokens,
+    },
+  };
 }

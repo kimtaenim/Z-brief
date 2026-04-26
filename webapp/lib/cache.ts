@@ -4,8 +4,15 @@ import type { BriefRecord, RecentSummary } from "./types";
 const TTL_SECONDS = 60 * 60 * 24 * 7;
 
 let redis: Redis | null = null;
-const memBriefs = new Map<string, BriefRecord>();
-const memOrder: string[] = [];
+
+const G = globalThis as unknown as {
+  __zbriefMemBriefs?: Map<string, BriefRecord>;
+  __zbriefMemOrder?: string[];
+};
+const memBriefs: Map<string, BriefRecord> =
+  G.__zbriefMemBriefs ?? (G.__zbriefMemBriefs = new Map());
+const memOrder: string[] =
+  G.__zbriefMemOrder ?? (G.__zbriefMemOrder = []);
 
 function getRedis(): Redis | null {
   if (redis) return redis;
@@ -19,15 +26,27 @@ function getRedis(): Redis | null {
 const briefKey = (id: string) => `zbrief:brief:${id}`;
 const recentKey = "zbrief:recent";
 
-export async function saveBrief(record: BriefRecord): Promise<void> {
-  const r = getRedis();
-  const summary: RecentSummary = {
+function toSummary(record: BriefRecord): RecentSummary {
+  const overview = record.sections.find((s) => s.id === "overview" && s.markdown);
+  const fallback = record.sections.find((s) => s.markdown);
+  const preview = (overview?.markdown ?? fallback?.markdown ?? record.fullMarkdown ?? "")
+    .replace(/^#.*$/gm, "")
+    .replace(/\n+/g, " ")
+    .trim()
+    .slice(0, 180);
+  return {
     id: record.id,
     createdAt: record.createdAt,
     dateKst: record.dateKst,
-    preview: record.markdown.slice(0, 200).replace(/\n+/g, " "),
+    preview,
     mode: record.meta.mode,
+    costKrw: record.meta.cost.total_krw,
   };
+}
+
+export async function saveBrief(record: BriefRecord): Promise<void> {
+  const r = getRedis();
+  const summary = toSummary(record);
   if (r) {
     await r.set(briefKey(record.id), JSON.stringify(record), { ex: TTL_SECONDS });
     await r.lpush(recentKey, JSON.stringify(summary));
@@ -55,14 +74,5 @@ export async function listRecent(limit = 5): Promise<RecentSummary[]> {
     const items = (await r.lrange(recentKey, 0, limit - 1)) as Array<string | RecentSummary>;
     return items.map((v) => (typeof v === "string" ? (JSON.parse(v) as RecentSummary) : v));
   }
-  return memOrder.slice(0, limit).map((id) => {
-    const rec = memBriefs.get(id)!;
-    return {
-      id: rec.id,
-      createdAt: rec.createdAt,
-      dateKst: rec.dateKst,
-      preview: rec.markdown.slice(0, 200).replace(/\n+/g, " "),
-      mode: rec.meta.mode,
-    };
-  });
+  return memOrder.slice(0, limit).map((id) => toSummary(memBriefs.get(id)!));
 }

@@ -1,10 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { CostFooter } from "@/components/CostFooter";
 import { GenerateButton } from "@/components/GenerateButton";
+import { KstClock } from "@/components/KstClock";
 import { PasswordGate } from "@/components/PasswordGate";
 import { RecentList } from "@/components/RecentList";
-import type { RecentSummary } from "@/lib/types";
+import { SectionPicker } from "@/components/SectionPicker";
+import { Card } from "@/components/ui/Card";
+import { Textarea } from "@/components/ui/Textarea";
+import { SECTION_ORDER, type RecentSummary, type SectionId } from "@/lib/types";
 
 interface AuthState {
   loading: boolean;
@@ -12,10 +17,14 @@ interface AuthState {
   authed: boolean;
 }
 
+const DRAFT_KEY = "zbrief:draft";
+
 export default function HomePage() {
   const [auth, setAuth] = useState<AuthState>({ loading: true, required: false, authed: false });
   const [recent, setRecent] = useState<RecentSummary[]>([]);
-  const [recentLoading, setRecentLoading] = useState(false);
+  const [selected, setSelected] = useState<Set<SectionId>>(() => new Set(SECTION_ORDER));
+  const [interest, setInterest] = useState("");
+  const [hydrated, setHydrated] = useState(false);
 
   const refreshAuth = useCallback(async () => {
     const res = await fetch("/api/login", { cache: "no-store" });
@@ -24,15 +33,33 @@ export default function HomePage() {
   }, []);
 
   const refreshRecent = useCallback(async () => {
-    setRecentLoading(true);
-    try {
-      const res = await fetch("/api/recent", { cache: "no-store" });
-      const data = (await res.json()) as { items: RecentSummary[]; authed: boolean };
-      setRecent(data.items ?? []);
-    } finally {
-      setRecentLoading(false);
-    }
+    const res = await fetch("/api/recent", { cache: "no-store" });
+    const data = (await res.json()) as { items: RecentSummary[]; authed: boolean };
+    setRecent(data.items ?? []);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const raw = window.localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as { sections?: SectionId[]; interest?: string };
+        if (Array.isArray(parsed.sections) && parsed.sections.length > 0) {
+          setSelected(new Set(parsed.sections));
+        }
+        if (typeof parsed.interest === "string") setInterest(parsed.interest);
+      }
+    } catch {}
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    window.localStorage.setItem(
+      DRAFT_KEY,
+      JSON.stringify({ sections: Array.from(selected), interest }),
+    );
+  }, [hydrated, selected, interest]);
 
   useEffect(() => {
     refreshAuth();
@@ -44,40 +71,94 @@ export default function HomePage() {
 
   const showGate = !auth.loading && auth.required && !auth.authed;
 
+  const sectionsArr = useMemo(
+    () => SECTION_ORDER.filter((s) => selected.has(s)),
+    [selected],
+  );
+
+  const toggle = (id: SectionId) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   return (
-    <main className="mx-auto max-w-2xl px-5 pt-12 pb-24 sm:px-6 sm:pt-20">
-      <header className="mb-10 sm:mb-14">
-        <p className="text-[12px] font-medium uppercase tracking-wider text-text-tertiary">
-          KOSDAQ 045510
-        </p>
-        <h1 className="mt-1 text-[28px] font-semibold tracking-tight text-text sm:text-[36px]">
-          정원엔시스 IR Brief
-        </h1>
-        <p className="mt-2 text-[14px] leading-relaxed text-text-secondary sm:text-[15px]">
-          5개 클러스터 (온프레미스AI / 피지컬AI / 버티컬AI / 보안과PQC / 밸류에이션)에서 48시간 내 보도를 모아 Claude로 요약합니다.
-        </p>
+    <>
+      <header className="sticky top-0 z-20 border-b border-zinc-200/70 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-3 sm:px-6">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-400">
+              KOSDAQ 045510
+            </p>
+            <h1 className="text-[15px] font-semibold tracking-tight text-zinc-900">
+              정원엔시스 IR Brief
+            </h1>
+          </div>
+          <div className="text-right text-[11px] tabular-nums text-zinc-500">
+            <KstClock />
+          </div>
+        </div>
       </header>
 
-      <section className="mb-10">
-        <GenerateButton onCreated={refreshRecent} />
-        <p className="mt-3 text-center text-[12px] text-text-tertiary">
-          Haiku로 1차 추리고 Sonnet으로 최종 작성. 1회 약 $0.05~0.15.
+      <main className="mx-auto min-h-dvh max-w-2xl px-5 pb-32 pt-6 sm:px-6 sm:pt-10">
+        <p className="mb-7 text-[13px] leading-relaxed text-zinc-500 sm:text-[14px]">
+          5개 클러스터 + 종합. 48시간 내 보도를 모아 Haiku 1차 추리고 Sonnet으로 마무리합니다.
         </p>
-      </section>
 
-      <section>
-        <div className="mb-3 flex items-baseline justify-between px-1">
-          <h2 className="text-[13px] font-medium uppercase tracking-wider text-text-tertiary">
+        <section className="mb-6">
+          <Card padding="md">
+            <SectionPicker
+              selected={selected}
+              onToggle={toggle}
+              onAll={() => setSelected(new Set(SECTION_ORDER))}
+              onNone={() => setSelected(new Set())}
+            />
+          </Card>
+        </section>
+
+        <section className="mb-6">
+          <Card padding="md">
+            <label htmlFor="interest" className="mb-3 block text-[12px] font-medium uppercase tracking-wider text-zinc-500">
+              오늘의 관심 주제 (선택)
+            </label>
+            <Textarea
+              id="interest"
+              rows={3}
+              value={interest}
+              onChange={(e) => setInterest(e.target.value)}
+              placeholder="예: 오늘은 메가존클라우드 IPO와 SKT 침해사고 좀 더 깊게"
+            />
+            <p className="mt-2 text-[11px] text-zinc-400">
+              입력하면 Sonnet 프롬프트에 가중치로 추가됩니다. 비우면 무시.
+            </p>
+          </Card>
+        </section>
+
+        <section className="mb-10">
+          <GenerateButton
+            sections={sectionsArr}
+            userInterest={interest}
+            onCreated={refreshRecent}
+          />
+          <p className="mt-3 text-center text-[11px] text-zinc-400">
+            1회 약 ₩70~210 (선택 섹션 수에 비례). 환율 1 USD = ₩1,400 고정.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-3 px-1 text-[12px] font-medium uppercase tracking-wider text-zinc-500">
             최근 결과
           </h2>
-          <span className="text-[12px] text-text-tertiary">
-            {recentLoading ? "..." : `${recent.length}건`}
-          </span>
-        </div>
-        <RecentList items={recent} />
-      </section>
+          <RecentList items={recent} />
+        </section>
 
-      {showGate && <PasswordGate onSuccess={refreshAuth} />}
-    </main>
+        {showGate && <PasswordGate onSuccess={refreshAuth} />}
+      </main>
+
+      <CostFooter />
+    </>
   );
 }
