@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+  background: #fafafa;
+  color: #1d1d1f;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "SF Pro Text", "Helvetica Neue", "Inter", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.prose-brief {
+  color: #1d1d1f;
+  font-size: 16px;
+  line-height: 1.7;
+}
+.prose-brief h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 24px;
+}
+.prose-brief h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 28px;
+  margin-bottom: 8px;
+  color: #1d1d1f;
+}
+.prose-brief h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6e6e73;
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+.prose-brief p {
+  margin-bottom: 12px;
+}
+.prose-brief ul {
+  list-style: disc;
+  padding-left: 22px;
+  margin-bottom: 12px;
+}
+.prose-brief li {
+  margin-bottom: 4px;
+}
+.prose-brief a {
+  color: #00b5a8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

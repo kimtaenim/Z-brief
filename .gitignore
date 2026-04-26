@@ -31,3 +31,11 @@ env/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Web app (Next.js)
+webapp/.next/
+webapp/node_modules/
+webapp/.env.local
+webapp/.env*.local
+webapp/next-env.d.ts
+webapp/tsconfig.tsbuildinfo
