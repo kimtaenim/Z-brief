@@ -1,0 +1,24 @@
+{
+  "anomaly": {
+    "spike_ratio": 3.0,
+    "spike_min_today_company": 3,
+    "spike_min_today_keyword": 5,
+    "comparison_window_days": 7,
+    "new_appearance_min": 1
+  },
+  "fetch": {
+    "results_per_cluster": 4,
+    "search_window_hours": 48,
+    "broker_timeout_ms": 8000,
+    "rss_timeout_ms": 10000
+  },
+  "summarize": {
+    "max_tokens": 1800,
+    "article_summary_chars": 200
+  },
+  "triage": {
+    "max_tokens": 512,
+    "target_keep": 3
+  },
+  "notes": "비싸다 싶으면 fetch.results_per_cluster + summarize.max_tokens 줄이기. anomaly 민감도는 spike_ratio + spike_min_today_*."
+}

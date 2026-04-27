@@ -6,9 +6,6 @@ global:
   cache_ttl_minutes: 60
   default_language: ko
   english_handling: korean_summary_with_term_in_parens
-  company:
-    name: 정원엔시스
-    related: [에이아이네이션, 바스코ICT, 젠시스, AX707]
 
 clusters:
   - id: onprem_ai

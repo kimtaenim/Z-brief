@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import direct from "@/data/direct_companies.json";
 
 interface Props {
   onSuccess: () => void;
@@ -52,7 +53,7 @@ export function PasswordGate({ onSuccess }: Props) {
           </h2>
         </div>
         <p className="mb-5 text-[13px] leading-relaxed text-zinc-500">
-          정원엔시스 IR Brief 접근에는 비밀번호가 필요합니다.
+          {direct.primary} IR Brief 접근에는 비밀번호가 필요합니다.
         </p>
         <Input
           type="password"

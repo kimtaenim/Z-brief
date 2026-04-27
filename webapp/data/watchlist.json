@@ -1,0 +1,9 @@
+{
+  "valuation_peers": {
+    "domestic_msp": ["메가존클라우드", "베스핀글로벌"],
+    "domestic_idc": ["케이아이엔엑스", "가비아", "효성ITX", "데이타솔루션"],
+    "domestic_ai_solution": ["솔트룩스", "셀바스AI", "마음AI"],
+    "global_infra": ["Equinix", "Digital Realty", "Snowflake", "Palantir"]
+  },
+  "notes": "anomaly 감지 시 비교종목 카운터 키. 모든 그룹은 평탄화되어 동일하게 추적되며, 표시할 때 그룹명을 함께 노출."
+}

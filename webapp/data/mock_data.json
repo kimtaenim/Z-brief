@@ -1,0 +1,44 @@
+{
+  "broker_reports_sample": [
+    {
+      "broker": "유안타증권",
+      "title": "YUANTA DAILY MARKET VIEW (mock)",
+      "category": "시장",
+      "report_idx": "000001"
+    },
+    {
+      "broker": "메리츠증권",
+      "title": "AI 인프라 멀티플 재평가, MSP 동향 점검 (mock)",
+      "category": "산업",
+      "report_idx": "000002"
+    },
+    {
+      "broker": "삼성증권",
+      "title": "데이터센터 추가 캐파 점검 (mock)",
+      "category": "기업",
+      "report_idx": "000003"
+    },
+    {
+      "broker": "키움증권",
+      "title": "PQC 표준화와 양자보안 시장 점검 (mock)",
+      "category": "산업",
+      "report_idx": "000004"
+    },
+    {
+      "broker": "한국투자증권",
+      "title": "온프레미스 LLM 도입 사례와 GPU 서버 가격 (mock)",
+      "category": "산업",
+      "report_idx": "000005"
+    }
+  ],
+  "broker_url_template": "https://consensus.hankyung.com/analysis/downpdf?report_idx={{REPORT_IDX}}",
+  "broker_default_source_id": "hankyung_consensus",
+  "anomaly_sample": {
+    "new_appearance_company_index": 0,
+    "spike_keyword": "PQC",
+    "spike_today": 6,
+    "spike_prev_avg": 1.7,
+    "spike_ratio": 3.5
+  },
+  "notes": "mock 모드에서 보일 더미 데이터. 회사명·키워드 변경은 다른 data/*.json 파일을 따라가도록 인덱스로 참조."
+}

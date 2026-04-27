@@ -9,6 +9,7 @@ import { RecentList } from "@/components/RecentList";
 import { SectionPicker } from "@/components/SectionPicker";
 import { Card } from "@/components/ui/Card";
 import { Textarea } from "@/components/ui/Textarea";
+import direct from "@/data/direct_companies.json";
 import { SECTION_ORDER, type RecentSummary, type SectionId } from "@/lib/types";
 
 interface AuthState {
@@ -91,10 +92,10 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-3 sm:px-6">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-400">
-              KOSDAQ 045510
+              {direct.market} {direct.ticker}
             </p>
             <h1 className="text-[15px] font-semibold tracking-tight text-zinc-900">
-              정원엔시스 IR Brief
+              {direct.primary} IR Brief
             </h1>
           </div>
           <div className="text-right text-[11px] tabular-nums text-zinc-500">
@@ -129,7 +130,7 @@ export default function HomePage() {
               rows={3}
               value={interest}
               onChange={(e) => setInterest(e.target.value)}
-              placeholder="예: 오늘은 메가존클라우드 IPO와 SKT 침해사고 좀 더 깊게"
+              placeholder="예: 오늘은 비교종목 IPO·M&A 또는 PQC 표준화 동향 좀 더 깊게"
             />
             <p className="mt-2 text-[11px] text-zinc-400">
               입력하면 Sonnet 프롬프트에 가중치로 추가됩니다. 비우면 무시.

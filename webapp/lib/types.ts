@@ -1,3 +1,5 @@
+import type { Anomaly } from "./anomaly";
+import type { BrokerFetchReport, BrokerReport } from "./broker_research";
 import type { CostSummary, ModelUsage } from "./cost";
 
 export interface Article {
@@ -44,7 +46,6 @@ export interface GlobalConfig {
   cache_ttl_minutes: number;
   default_language: string;
   english_handling: string;
-  company: { name: string; related: string[] };
 }
 
 export interface ClustersFile {
@@ -87,6 +88,9 @@ export interface BriefRecord {
   meta: {
     mode: "live" | "mock";
     feedReports: FetchReport[];
+    brokerReports: BrokerFetchReport[];
+    brokerItems: BrokerReport[];
+    anomalies: Anomaly[];
     clusterCounts: Record<string, number>;
     sanitizeReport?: { replaced: Record<string, number>; violations: string[] };
     selectedSections: SectionId[];
@@ -129,7 +133,7 @@ export const SECTION_LABEL: Record<SectionId, string> = {
 };
 
 export const SECTION_DESCRIPTION: Record<SectionId, string> = {
-  overview: "오늘의 정원엔시스 + 핵심 기사 + 총평",
+  overview: "회사 직접 동향 + 특이사항 + 증권사 모닝브리프 + 핵심 기사 + 총평",
   onprem_ai: "프라이빗 LLM, AI 어플라이언스, 소버린 AI",
   physical_ai: "로봇, 스마트팩토리, 비전 AI",
   vertical_ai: "의료·법률·언론·교육 등 도메인 LLM",

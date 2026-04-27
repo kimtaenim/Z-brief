@@ -1,0 +1,77 @@
+[
+  {
+    "id": "hankyung_consensus",
+    "name": "한경 컨센서스",
+    "enabled": true,
+    "list_urls": [
+      "https://consensus.hankyung.com/",
+      "https://consensus.hankyung.com/analysis/list?skinType=market",
+      "https://consensus.hankyung.com/analysis/list?skinType=industry",
+      "https://consensus.hankyung.com/analysis/list?skinType=business"
+    ],
+    "method": "html",
+    "encoding": "utf-8",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36",
+    "request_headers": {
+      "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8",
+      "Accept": "text/html,application/xhtml+xml"
+    },
+    "selectors": {
+      "item": "table tbody tr",
+      "date": "td:nth-child(1)",
+      "category": "td:nth-child(2)",
+      "title": "td.text_l a",
+      "url": "td.text_l a@href",
+      "broker": "td:nth-child(5)"
+    },
+    "url_prefix": "https://consensus.hankyung.com",
+    "max_items_per_url": 30,
+    "max_items_total": 80,
+    "date_format": "YYYY-MM-DD",
+    "notes": "한경 컨센서스는 미래에셋·삼성·KB·한국투자·NH·키움·신한·메리츠·하나·대신·유안타·IBK·SK 등 거의 모든 증권사 리포트 제목+PDF 링크를 server-rendered HTML로 한 곳에 모아 제공. 개별 증권사 사이트는 401/SPA/오류페이지로 막혀 있어 정찰 후 모두 비활성."
+  },
+  {
+    "id": "miraeasset",
+    "name": "미래에셋증권",
+    "enabled": false,
+    "list_urls": [],
+    "method": "html",
+    "encoding": "utf-8",
+    "selectors": { "item": "", "title": "", "url": "", "date": "", "category": "" },
+    "max_items_per_url": 10,
+    "notes": "비활성: securities.miraeasset.com → 401 Basic Auth. 한경 컨센서스에서 미래에셋 리포트 그대로 받음."
+  },
+  {
+    "id": "samsung",
+    "name": "삼성증권",
+    "enabled": false,
+    "list_urls": [],
+    "method": "html",
+    "encoding": "utf-8",
+    "selectors": { "item": "", "title": "", "url": "", "date": "", "category": "" },
+    "max_items_per_url": 10,
+    "notes": "비활성: samsungpop.com → JS 전용 SPA. 한경 컨센서스에서 삼성 리포트 그대로 받음."
+  },
+  {
+    "id": "kb",
+    "name": "KB증권",
+    "enabled": false,
+    "list_urls": [],
+    "method": "html",
+    "encoding": "euc-kr",
+    "selectors": { "item": "", "title": "", "url": "", "date": "", "category": "" },
+    "max_items_per_url": 10,
+    "notes": "비활성: kbsec.com → EUC-KR + JS 전용 SPA. 한경 컨센서스 경유."
+  },
+  {
+    "id": "shinhan",
+    "name": "신한투자증권",
+    "enabled": false,
+    "list_urls": [],
+    "method": "html",
+    "encoding": "utf-8",
+    "selectors": { "item": "", "title": "", "url": "", "date": "", "category": "" },
+    "max_items_per_url": 10,
+    "notes": "비활성: shinhansec.com → 빈 컨테이너 SPA. 한경 컨센서스 경유."
+  }
+]

@@ -7,6 +7,7 @@ import { CostCard } from "@/components/CostCard";
 import { CostFooter } from "@/components/CostFooter";
 import { SectionCard } from "@/components/SectionCard";
 import { Card } from "@/components/ui/Card";
+import direct from "@/data/direct_companies.json";
 import type { BriefRecord } from "@/lib/types";
 
 interface PageProps {
@@ -73,7 +74,7 @@ export default function ResultPage({ params }: PageProps) {
           <>
             <div className="mb-6">
               <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-400">
-                정원엔시스 · KOSDAQ 045510
+                {direct.primary} · {direct.market} {direct.ticker}
               </p>
               <h1 className="mt-1 text-[22px] font-semibold tracking-tight text-zinc-900 sm:text-[26px]">
                 IR Brief — {record.dateKst}

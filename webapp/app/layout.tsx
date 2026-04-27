@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import direct from "@/data/direct_companies.json";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "정원엔시스 IR Brief",
-  description: "정원엔시스 (KOSDAQ 045510) IR Brief 자동 생성",
+  title: `${direct.primary} IR Brief`,
+  description: `${direct.primary}${direct.market && direct.ticker ? ` (${direct.market} ${direct.ticker})` : ""} IR Brief 자동 생성`,
 };
 
 export const viewport: Viewport = {

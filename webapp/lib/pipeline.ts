@@ -1,9 +1,21 @@
 import { v4 as uuidv4 } from "uuid";
+import {
+  anomaliesToText,
+  detectAnomalies,
+  recordDailyMentions,
+  type Anomaly,
+} from "./anomaly";
+import { crawlAllBrokers, type BrokerFetchReport, type BrokerReport } from "./broker_research";
 import { loadClusters } from "./clusters";
 import { summarizeCost, type ModelUsage } from "./cost";
 import { fetchCluster } from "./fetch";
 import { filterArticles } from "./filter";
-import { mockBrief } from "./mock";
+import {
+  companyTerms,
+  loadDirectCompanies,
+  loadThresholds,
+} from "./loaders";
+import { mockAnomalies, mockBrief, mockBrokerReports } from "./mock";
 import { sanitize } from "./render";
 import { splitSections } from "./sections";
 import { nowKstDate, nowKstDateTime, summarizeBrief } from "./summarize";
@@ -45,35 +57,38 @@ const CLUSTER_OF_SECTION: Partial<Record<SectionId, string>> = {
 
 export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
   const cfg = loadClusters();
-  const settings = cfg.global;
-  const company = settings.company;
-  const terms = [company.name, ...(company.related ?? [])].filter(Boolean);
+  const direct = loadDirectCompanies();
+  const t = loadThresholds();
+  const terms = companyTerms(direct);
   const hasKey = !!process.env.ANTHROPIC_API_KEY;
 
   const selected = normalizeSections(req.sections);
   const userInterest = (req.userInterest ?? "").trim() || null;
-
   const overviewSelected = selected.includes("overview");
+
   const clusterIdsNeeded = new Set<string>();
-  if (overviewSelected) {
-    for (const c of cfg.clusters) clusterIdsNeeded.add(c.id);
-  }
+  if (overviewSelected) for (const c of cfg.clusters) clusterIdsNeeded.add(c.id);
   for (const s of selected) {
     const cid = CLUSTER_OF_SECTION[s];
     if (cid) clusterIdsNeeded.add(cid);
   }
 
-  const fetched = await Promise.all(
+  const fetchPromise = Promise.all(
     cfg.clusters.map((c) =>
       clusterIdsNeeded.has(c.id)
         ? fetchCluster(c.id, c.rss_feeds ?? [])
         : Promise.resolve({ cluster_id: c.id, articles: [], reports: [] }),
     ),
   );
+  const brokerPromise = overviewSelected
+    ? crawlAllBrokers()
+    : Promise.resolve({ reports: [], fetch_reports: [] });
+
+  const [fetched, brokerCrawl] = await Promise.all([fetchPromise, brokerPromise]);
   const allReports: FetchReport[] = fetched.flatMap((f) => f.reports);
 
   const filteredPerCluster = fetched.map((res) =>
-    filterArticles(res.articles, settings.search_window_hours),
+    filterArticles(res.articles, t.fetch.search_window_hours),
   );
   const clusterCounts: Record<string, number> = {};
   cfg.clusters.forEach((c, i) => {
@@ -84,6 +99,9 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
   let runs: ClusterRunOutput[];
   let mode: "live" | "mock" = "mock";
   let companyArticles: Article[] = [];
+  let anomalies: Anomaly[] = [];
+  let brokerReports: BrokerReport[] = brokerCrawl.reports;
+  let brokerFetchReports: BrokerFetchReport[] = brokerCrawl.fetch_reports;
   let fullMarkdown: string;
   let sanitizeReport: { replaced: Record<string, number>; violations: string[] } | undefined;
 
@@ -94,8 +112,8 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
         if (!clusterIdsNeeded.has(c.id)) {
           return { id: c.id, name: c.name, articles: [] };
         }
-        const candidates = filteredPerCluster[i].slice(0, settings.results_per_cluster);
-        const result = await triageCluster(c.id, candidates, 3);
+        const candidates = filteredPerCluster[i].slice(0, t.fetch.results_per_cluster);
+        const result = await triageCluster(c.id, candidates, t.triage.target_keep);
         usages.push(result.usage);
         return { id: c.id, name: c.name, articles: result.articles };
       }),
@@ -103,9 +121,15 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
     const all = runs.flatMap((r) => r.articles);
     companyArticles = findCompanyArticles(all, terms);
 
-    const summary = await summarizeBrief(runs, companyArticles, {
+    if (overviewSelected) {
+      const todayCounts = await recordDailyMentions(all, brokerReports);
+      anomalies = await detectAnomalies(todayCounts);
+    }
+
+    const summary = await summarizeBrief(runs, companyArticles, brokerReports, {
       selectedSections: selected,
       userInterest,
+      anomaliesText: anomaliesToText(anomalies),
     });
     usages.push(summary.usage);
 
@@ -121,12 +145,15 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
     const all = runs.flatMap((r) => r.articles);
     companyArticles = findCompanyArticles(all, terms);
 
-    const raw = mockBrief(runs, companyArticles, allReports, {
+    if (brokerReports.length === 0) brokerReports = mockBrokerReports();
+    if (overviewSelected) anomalies = mockAnomalies();
+
+    const raw = mockBrief(runs, companyArticles, allReports, anomalies, brokerReports, {
       selectedSections: selected,
       userInterest,
     });
+
     const clusterSelected = selected.filter((s) => s !== "overview").length;
-    const triageCalls = clusterSelected;
     const triageInputBase = 250;
     const triageInputCached = 200;
     const triageOutput = 120;
@@ -134,14 +161,14 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
     const summarizeCacheCreation = 700;
     const summarizeOutput = Math.round(250 * selected.length);
 
-    if (triageCalls > 0) {
+    if (clusterSelected > 0) {
       usages.push({
         model: "claude-haiku-4-5-20251001",
         input_tokens: triageInputBase,
         output_tokens: triageOutput,
         cache_creation_input_tokens: 250,
       });
-      for (let i = 1; i < triageCalls; i++) {
+      for (let i = 1; i < clusterSelected; i++) {
         usages.push({
           model: "claude-haiku-4-5-20251001",
           input_tokens: triageInputCached,
@@ -156,6 +183,7 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
       output_tokens: summarizeOutput,
       cache_creation_input_tokens: summarizeCacheCreation,
     });
+
     const cleaned = sanitize(raw, cfg.forbidden_patterns?.banned_words ?? ["추천"]);
     fullMarkdown = cleaned.text;
     sanitizeReport = cleaned.report;
@@ -174,6 +202,9 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
     meta: {
       mode,
       feedReports: allReports,
+      brokerReports: brokerFetchReports,
+      brokerItems: brokerReports,
+      anomalies,
       clusterCounts,
       sanitizeReport,
       selectedSections: selected,
