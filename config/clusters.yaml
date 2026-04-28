@@ -1,5 +1,5 @@
 global:
-  search_window_hours: 48
+  search_window_hours: 24
   results_per_cluster: 4
   llm_triage: claude-haiku-4-5-20251001
   llm_final: claude-sonnet-4-6
