@@ -4,7 +4,6 @@ import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { CopyButton } from "@/components/CopyButton";
 import { CostCard } from "@/components/CostCard";
-import { CostFooter } from "@/components/CostFooter";
 import { SectionCard } from "@/components/SectionCard";
 import { Card } from "@/components/ui/Card";
 import direct from "@/data/direct_companies.json";
@@ -137,8 +136,6 @@ export default function ResultPage({ params }: PageProps) {
           </>
         )}
       </main>
-
-      <CostFooter />
     </>
   );
 }

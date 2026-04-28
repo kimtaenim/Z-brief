@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { CostFooter } from "@/components/CostFooter";
 import { RecentList } from "@/components/RecentList";
 import direct from "@/data/direct_companies.json";
 import type { RecentSummary } from "@/lib/types";
@@ -94,8 +93,6 @@ export default function LibraryPage() {
           <RecentList items={items} onDelete={handleDelete} emptyMessage="보관된 브리프가 없습니다." />
         )}
       </main>
-
-      <CostFooter />
     </>
   );
 }

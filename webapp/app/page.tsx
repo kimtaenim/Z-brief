@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CostFooter } from "@/components/CostFooter";
 import { GenerateButton } from "@/components/GenerateButton";
 import { KstClock } from "@/components/KstClock";
 import { PasswordGate } from "@/components/PasswordGate";
@@ -172,8 +171,6 @@ export default function HomePage() {
 
         {showGate && <PasswordGate onSuccess={refreshAuth} />}
       </main>
-
-      <CostFooter />
     </>
   );
 }
