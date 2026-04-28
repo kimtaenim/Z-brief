@@ -29,7 +29,10 @@ clusters:
       - ZDNet Korea
       - IDC
       - Gartner
-    rss_feeds: []
+    rss_feeds:
+      - https://rss.etnews.com/Section902.xml
+      - https://rss.etnews.com/Section901.xml
+      - https://www.aitimes.com/rss/allArticle.xml
     focus: 도입사례, GPU·서버 가격, 보안·규제
 
   - id: physical_ai
@@ -138,7 +141,12 @@ clusters:
       - NIST PQC
       - IBM Research
       - ETRI
-    rss_feeds: []
+    rss_feeds:
+      - https://www.boannews.com/media/news_rss.xml
+      - https://www.dailysecu.com/rss/allArticle.xml
+      - https://www.bleepingcomputer.com/feed/
+      - https://feeds.feedburner.com/TheHackersNews
+      - https://krebsonsecurity.com/feed/
     focus: 침해사고, AI 모델 보안 위협, 표준 진척, 의무화, PoC, 정부 대응
 
   - id: valuation
@@ -158,21 +166,6 @@ clusters:
       - hyperscaler capex
       - AI M&A
       - AI IPO
-    peers_kr:
-      - 메가존클라우드
-      - 베스핀글로벌
-      - 케이아이엔엑스
-      - 가비아
-      - 효성ITX
-      - 데이타솔루션
-      - 솔트룩스
-      - 셀바스AI
-      - 마음AI
-    peers_global:
-      - Equinix
-      - Digital Realty
-      - Snowflake
-      - Palantir
     sources:
       - Bloomberg
       - FT
@@ -187,8 +180,9 @@ clusters:
       - 삼정KPMG
       - 삼일KPMG
       - 증권사 IT 리포트
-    rss_feeds: []
-    focus: 멀티플 변동, MSP·IDC군 비교, M&A, 기술특례, 정원엔시스 비교 포지션
+    rss_feeds:
+      - https://www.mk.co.kr/rss/40300001/
+    focus: 멀티플 변동, MSP·IDC군 비교, M&A, 기술특례, 비교 포지션
 
 forbidden_patterns:
   description: 출력 본문에서 절대 등장 금지. render.py에서 정규식 검사.

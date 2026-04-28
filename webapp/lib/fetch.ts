@@ -3,7 +3,12 @@ import type { Article, ClusterFetchResult, FetchReport } from "./types";
 
 const parser = new Parser({
   timeout: 10_000,
-  headers: { "User-Agent": "Z-brief/0.1 (+https://github.com/kimtaenim/Z-brief)" },
+  headers: {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36",
+    Accept: "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
+    "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8",
+  },
 });
 
 function hostOf(url: string): string {

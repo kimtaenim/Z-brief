@@ -5,7 +5,11 @@ import {
   recordDailyMentions,
   type Anomaly,
 } from "./anomaly";
-import { crawlAllBrokers, type BrokerFetchReport, type BrokerReport } from "./broker_research";
+import {
+  crawlAllBrokers,
+  type BrokerFetchReport,
+  type BrokerReport,
+} from "./broker_research";
 import { loadClusters } from "./clusters";
 import { summarizeCost, type ModelUsage } from "./cost";
 import { fetchCluster } from "./fetch";
@@ -36,6 +40,45 @@ function findCompanyArticles(all: Article[], terms: string[]): Article[] {
       (t) => a.title.includes(t) || (a.summary?.includes(t) ?? false),
     ),
   );
+}
+
+function brokerToArticle(report: BrokerReport, clusterId: string): Article {
+  return {
+    cluster_id: clusterId,
+    title: `[${report.broker} 리서치] ${report.title}`,
+    url: report.url,
+    source: report.broker,
+    published: report.date,
+    summary: report.category ? `증권사 리포트 카테고리: ${report.category}` : "",
+    language: "ko",
+  };
+}
+
+function matchBrokerReportsToClusters(
+  reports: BrokerReport[],
+  clusters: ReturnType<typeof loadClusters>["clusters"],
+): Map<string, Article[]> {
+  const out = new Map<string, Article[]>();
+  for (const c of clusters) out.set(c.id, []);
+
+  for (const r of reports) {
+    const haystack = `${r.title} ${r.category ?? ""}`.toLowerCase();
+    let bestId: string | null = null;
+    let bestScore = 0;
+    for (const c of clusters) {
+      const kws = [...(c.keywords_ko ?? []), ...(c.keywords_en ?? [])];
+      let score = 0;
+      for (const kw of kws) {
+        if (haystack.includes(kw.toLowerCase())) score += 1;
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        bestId = c.id;
+      }
+    }
+    if (bestId) out.get(bestId)!.push(brokerToArticle(r, bestId));
+  }
+  return out;
 }
 
 function normalizeSections(req: SectionId[] | undefined): SectionId[] {
@@ -80,16 +123,27 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
         : Promise.resolve({ cluster_id: c.id, articles: [], reports: [] }),
     ),
   );
-  const brokerPromise = overviewSelected
-    ? crawlAllBrokers()
-    : Promise.resolve({ reports: [], fetch_reports: [] });
+  const brokerPromise = crawlAllBrokers();
 
   const [fetched, brokerCrawl] = await Promise.all([fetchPromise, brokerPromise]);
   const allReports: FetchReport[] = fetched.flatMap((f) => f.reports);
 
+  let brokerReports: BrokerReport[] = brokerCrawl.reports;
+  const brokerFetchReports: BrokerFetchReport[] = brokerCrawl.fetch_reports;
+  if (!hasKey && brokerReports.length === 0) {
+    brokerReports = mockBrokerReports();
+  }
+
   const filteredPerCluster = fetched.map((res) =>
     filterArticles(res.articles, t.fetch.search_window_hours),
   );
+
+  const brokerByCluster = matchBrokerReportsToClusters(brokerReports, cfg.clusters);
+  cfg.clusters.forEach((c, i) => {
+    const matched = brokerByCluster.get(c.id) ?? [];
+    if (matched.length > 0) filteredPerCluster[i] = [...filteredPerCluster[i], ...matched];
+  });
+
   const clusterCounts: Record<string, number> = {};
   cfg.clusters.forEach((c, i) => {
     clusterCounts[c.id] = filteredPerCluster[i].length;
@@ -100,8 +154,6 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
   let mode: "live" | "mock" = "mock";
   let companyArticles: Article[] = [];
   let anomalies: Anomaly[] = [];
-  let brokerReports: BrokerReport[] = brokerCrawl.reports;
-  let brokerFetchReports: BrokerFetchReport[] = brokerCrawl.fetch_reports;
   let fullMarkdown: string;
   let sanitizeReport: { replaced: Record<string, number>; violations: string[] } | undefined;
 
@@ -145,7 +197,6 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
     const all = runs.flatMap((r) => r.articles);
     companyArticles = findCompanyArticles(all, terms);
 
-    if (brokerReports.length === 0) brokerReports = mockBrokerReports();
     if (overviewSelected) anomalies = mockAnomalies();
 
     const raw = mockBrief(runs, companyArticles, allReports, anomalies, brokerReports, {
