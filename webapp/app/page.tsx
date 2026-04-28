@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CostFooter } from "@/components/CostFooter";
 import { GenerateButton } from "@/components/GenerateButton";
@@ -150,10 +151,23 @@ export default function HomePage() {
         </section>
 
         <section>
-          <h2 className="mb-3 px-1 text-[12px] font-medium uppercase tracking-wider text-zinc-500">
-            최근 결과
-          </h2>
-          <RecentList items={recent} />
+          <div className="mb-3 flex items-baseline justify-between px-1">
+            <h2 className="text-[12px] font-medium uppercase tracking-wider text-zinc-500">
+              최근 결과
+            </h2>
+            <Link
+              href="/library"
+              className="text-[12px] text-blue-600 hover:underline"
+            >
+              전체 보기
+            </Link>
+          </div>
+          <RecentList items={recent} onDelete={async (id) => {
+            const before = recent;
+            setRecent((prev) => prev.filter((x) => x.id !== id));
+            const res = await fetch(`/api/brief/${id}`, { method: "DELETE" });
+            if (!res.ok) setRecent(before);
+          }} />
         </section>
 
         {showGate && <PasswordGate onSuccess={refreshAuth} />}

@@ -44,18 +44,43 @@ function toSummary(record: BriefRecord): RecentSummary {
   };
 }
 
+const MAX_HISTORY = 50;
+
 export async function saveBrief(record: BriefRecord): Promise<void> {
   const r = getRedis();
   const summary = toSummary(record);
   if (r) {
     await r.set(briefKey(record.id), JSON.stringify(record), { ex: TTL_SECONDS });
     await r.lpush(recentKey, JSON.stringify(summary));
-    await r.ltrim(recentKey, 0, 19);
+    await r.ltrim(recentKey, 0, MAX_HISTORY - 1);
   } else {
     memBriefs.set(record.id, record);
     memOrder.unshift(record.id);
-    while (memOrder.length > 20) memOrder.pop();
+    while (memOrder.length > MAX_HISTORY) memOrder.pop();
   }
+}
+
+export async function deleteBrief(id: string): Promise<boolean> {
+  const r = getRedis();
+  if (r) {
+    const exists = await r.exists(briefKey(id));
+    if (!exists) return false;
+    await r.del(briefKey(id));
+    const list = (await r.lrange(recentKey, 0, MAX_HISTORY - 1)) as Array<string | RecentSummary>;
+    const kept = list
+      .map((v) => (typeof v === "string" ? (JSON.parse(v) as RecentSummary) : v))
+      .filter((s) => s.id !== id);
+    await r.del(recentKey);
+    if (kept.length > 0) {
+      await r.rpush(recentKey, ...kept.map((s) => JSON.stringify(s)));
+    }
+    return true;
+  }
+  if (!memBriefs.has(id)) return false;
+  memBriefs.delete(id);
+  const idx = memOrder.indexOf(id);
+  if (idx >= 0) memOrder.splice(idx, 1);
+  return true;
 }
 
 export async function loadBrief(id: string): Promise<BriefRecord | null> {
@@ -75,4 +100,8 @@ export async function listRecent(limit = 5): Promise<RecentSummary[]> {
     return items.map((v) => (typeof v === "string" ? (JSON.parse(v) as RecentSummary) : v));
   }
   return memOrder.slice(0, limit).map((id) => toSummary(memBriefs.get(id)!));
+}
+
+export async function listAll(): Promise<RecentSummary[]> {
+  return listRecent(MAX_HISTORY);
 }
