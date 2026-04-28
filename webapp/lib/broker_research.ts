@@ -95,14 +95,12 @@ async function crawlOne(
     };
   }
 
-  const all: BrokerReport[] = [];
-  let lastErr: string | null = null;
-
-  for (const url of broker.list_urls) {
-    try {
+  const perUrl = await Promise.allSettled(
+    broker.list_urls.map(async (url) => {
       const html = await fetchHtml(url, broker, timeoutMs);
       const $ = cheerio.load(html);
       const items = $(broker.selectors.item);
+      const out: BrokerReport[] = [];
       let count = 0;
       items.each((_, raw) => {
         if (count >= broker.max_items_per_url) return false;
@@ -113,7 +111,7 @@ async function crawlOne(
         const date = extract($, el, broker.selectors.date) || null;
         const category = extract($, el, broker.selectors.category) || null;
         const brokerName = extract($, el, broker.selectors.broker) || broker.name;
-        all.push({
+        out.push({
           broker: brokerName,
           source_id: broker.id,
           title,
@@ -123,9 +121,15 @@ async function crawlOne(
         });
         count += 1;
       });
-    } catch (err) {
-      lastErr = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
-    }
+      return out;
+    }),
+  );
+
+  const all: BrokerReport[] = [];
+  let lastErr: string | null = null;
+  for (const r of perUrl) {
+    if (r.status === "fulfilled") all.push(...r.value);
+    else lastErr = r.reason instanceof Error ? `${r.reason.name}: ${r.reason.message}` : String(r.reason);
   }
 
   const dedup = dedupReports(all).slice(0, broker.max_items_total);

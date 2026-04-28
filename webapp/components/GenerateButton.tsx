@@ -30,6 +30,8 @@ export function GenerateButton({ sections, userInterest, disabled, onCreated }: 
   const handle = async () => {
     setPending(true);
     setError(null);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 100_000);
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -38,6 +40,7 @@ export function GenerateButton({ sections, userInterest, disabled, onCreated }: 
           sections,
           userInterest: userInterest.trim() || undefined,
         }),
+        signal: controller.signal,
       });
       if (res.status === 401) {
         setError("로그인이 필요합니다. 페이지를 새로고침 해주세요.");
@@ -48,17 +51,25 @@ export function GenerateButton({ sections, userInterest, disabled, onCreated }: 
         return;
       }
       if (!res.ok) {
-        const data = (await res.json().catch(() => ({}))) as { detail?: string };
-        setError(`생성 실패: ${data.detail ?? res.statusText}`);
+        const data = (await res.json().catch(() => ({}))) as { detail?: string; error?: string };
+        setError(`생성 실패 [${res.status}]: ${data.detail ?? data.error ?? res.statusText}`);
         return;
       }
       const data = (await res.json()) as GenerateResponse;
-      if (data.cost?.total_krw) recordCumulativeCost(data.cost.total_krw);
+      if (typeof data.cost?.total_krw === "number" && data.cost.total_krw > 0) {
+        recordCumulativeCost(data.cost.total_krw);
+      }
       onCreated?.();
       router.push(`/result/${data.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "알 수 없는 오류");
+      if (err instanceof DOMException && err.name === "AbortError") {
+        setError("응답이 100초 안에 오지 않았습니다. 섹션을 줄여서 다시 시도하세요.");
+      } else {
+        const msg = err instanceof Error ? err.message : "알 수 없는 오류";
+        setError(`네트워크 오류: ${msg}`);
+      }
     } finally {
+      clearTimeout(timer);
       setPending(false);
     }
   };
