@@ -31,8 +31,6 @@ function getRedis(): Redis | null {
 const COMPANY_KEY = (c: string) => `zbrief:company:${c}`;
 const KEYWORD_KEY = (k: string) => `zbrief:keyword:${k}`;
 const ARTICLES_BY_DATE = (d: string) => `zbrief:articles:by_date:${d}`;
-const TTL_DAYS = 60;
-const TTL_SECONDS = TTL_DAYS * 24 * 3600;
 
 function dayKey(d: Date): string {
   const fmt = new Intl.DateTimeFormat("en-CA", {
@@ -111,13 +109,11 @@ export async function recordDailyMentions(
     const pipe = r.multi();
     for (const [name, n] of counts.companies) {
       pipe.zincrby(COMPANY_KEY(name), n, date);
-      pipe.expire(COMPANY_KEY(name), TTL_SECONDS);
     }
     for (const [kw, n] of counts.keywords) {
       pipe.zincrby(KEYWORD_KEY(kw), n, date);
-      pipe.expire(KEYWORD_KEY(kw), TTL_SECONDS);
     }
-    pipe.set(ARTICLES_BY_DATE(date), articles.length, { ex: TTL_SECONDS });
+    pipe.set(ARTICLES_BY_DATE(date), articles.length);
     await pipe.exec();
   } else {
     const slot = memAccum.days.get(date) ?? { companies: new Map(), keywords: new Map() };
