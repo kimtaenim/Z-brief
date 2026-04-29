@@ -48,6 +48,7 @@ function brokerToArticle(report: BrokerReport, clusterId: string): Article {
     title: `[${report.broker} 리서치] ${report.title}`,
     url: report.url,
     source: report.broker,
+    author: null,
     published: report.date,
     summary: report.category ? `증권사 리포트 카테고리: ${report.category}` : "",
     language: "ko",

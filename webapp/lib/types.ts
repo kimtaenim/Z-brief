@@ -7,6 +7,7 @@ export interface Article {
   title: string;
   url: string;
   source: string;
+  author: string | null;
   published: string | null;
   summary: string;
   language: "ko" | "en";

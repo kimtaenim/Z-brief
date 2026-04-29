@@ -31,6 +31,9 @@ function getRedis(): Redis | null {
 const COMPANY_KEY = (c: string) => `zbrief:company:${c}`;
 const KEYWORD_KEY = (k: string) => `zbrief:keyword:${k}`;
 const ARTICLES_BY_DATE = (d: string) => `zbrief:articles:by_date:${d}`;
+const SOURCE_KEY = (s: string) => `zbrief:source:${s}`;
+const REPORTER_KEY = (s: string, a: string) => `zbrief:reporter:${s}:${a}`;
+const REPORTER_TOPICS_KEY = (s: string, a: string) => `zbrief:reporter_topics:${s}:${a}`;
 
 function dayKey(d: Date): string {
   const fmt = new Intl.DateTimeFormat("en-CA", {
@@ -104,6 +107,22 @@ export async function recordDailyMentions(
 
   const counts = countMentions(haystacks, companies, keywords);
 
+  const sourceCounts = new Map<string, number>();
+  const reporterCounts = new Map<string, { source: string; author: string; count: number }>();
+  const reporterTopics = new Map<string, Map<string, number>>();
+  for (const a of articles) {
+    if (a.source) sourceCounts.set(a.source, (sourceCounts.get(a.source) ?? 0) + 1);
+    if (a.source && a.author) {
+      const key = `${a.source}::${a.author}`;
+      const cur = reporterCounts.get(key);
+      if (cur) cur.count += 1;
+      else reporterCounts.set(key, { source: a.source, author: a.author, count: 1 });
+      const topics = reporterTopics.get(key) ?? new Map();
+      topics.set(a.cluster_id, (topics.get(a.cluster_id) ?? 0) + 1);
+      reporterTopics.set(key, topics);
+    }
+  }
+
   const r = getRedis();
   if (r) {
     const pipe = r.multi();
@@ -112,6 +131,18 @@ export async function recordDailyMentions(
     }
     for (const [kw, n] of counts.keywords) {
       pipe.zincrby(KEYWORD_KEY(kw), n, date);
+    }
+    for (const [src, n] of sourceCounts) {
+      pipe.zincrby(SOURCE_KEY(src), n, date);
+    }
+    for (const [, info] of reporterCounts) {
+      pipe.zincrby(REPORTER_KEY(info.source, info.author), info.count, date);
+      const topics = reporterTopics.get(`${info.source}::${info.author}`);
+      if (topics) {
+        for (const [topic, n] of topics) {
+          pipe.zincrby(REPORTER_TOPICS_KEY(info.source, info.author), n, topic);
+        }
+      }
     }
     pipe.set(ARTICLES_BY_DATE(date), articles.length);
     await pipe.exec();

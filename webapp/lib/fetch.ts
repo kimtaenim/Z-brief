@@ -28,6 +28,21 @@ function guessLang(text: string): "ko" | "en" {
   return "en";
 }
 
+function extractAuthor(item: Record<string, unknown>): string | null {
+  const candidates = [
+    item.creator,
+    item["dc:creator"],
+    item.author,
+    (item.author as { name?: string } | undefined)?.name,
+  ];
+  for (const c of candidates) {
+    if (typeof c === "string" && c.trim()) {
+      return c.trim().replace(/\s+/g, " ").replace(/^by\s+/i, "");
+    }
+  }
+  return null;
+}
+
 async function fetchOne(
   cluster_id: string,
   feed: string,
@@ -39,6 +54,7 @@ async function fetchOne(
       title: (item.title ?? "").trim(),
       url: (item.link ?? "").trim(),
       source: hostOf(item.link ?? "") || feed,
+      author: extractAuthor(item as Record<string, unknown>),
       published: item.isoDate ?? item.pubDate ?? null,
       summary: ((item.contentSnippet ?? item.content ?? item.summary ?? "") as string).trim(),
       language: guessLang(item.title ?? ""),
