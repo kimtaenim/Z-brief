@@ -152,6 +152,9 @@ clusters:
   - id: valuation
     name: 밸류에이션
     keywords_ko:
+      - 기술특례상장
+      - 코스닥 기술특례상장
+      - 기특상
       - AI 인프라 밸류에이션
       - 클라우드 MSP
       - 메가존클라우드
