@@ -1,5 +1,6 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { getAnthropic, MODELS } from "./anthropic";
+import { withRetry } from "./retry";
 import {
   companyTerms,
   fillTemplate,
@@ -131,7 +132,12 @@ export async function summarizeBrief(
     blocks.push("");
   }
 
-  const resp = await client.messages.create({
+  // WHY withRetry + delayMs 1000:
+  // summarize는 파이프라인의 마지막 단계이자 가장 비싼 호출(Sonnet)이다.
+  // 이 단계에서 실패하면 앞선 triage 5회 호출 비용이 전부 낭비된다.
+  // triage(500ms)보다 긴 1000ms delay를 주는 것은 Sonnet의 처리 시간이 더 길어
+  // 서버 측 과부하에서 회복하는 데 더 많은 시간이 필요하기 때문이다.
+  const resp = await withRetry(() => client.messages.create({
     model: MODELS.summarize,
     max_tokens: t.summarize.max_tokens,
     system: [
@@ -142,7 +148,7 @@ export async function summarizeBrief(
       },
     ],
     messages: [{ role: "user", content: blocks.join("\n") }],
-  });
+  }), { delayMs: 1000 });
 
   const text = resp.content
     .filter((b): b is Anthropic.TextBlock => b.type === "text")

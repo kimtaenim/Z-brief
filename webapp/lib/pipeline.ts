@@ -174,7 +174,18 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
     const all = runs.flatMap((r) => r.articles);
     companyArticles = findCompanyArticles(all, terms);
 
-    if (overviewSelected) {
+    // WHY Redis 체크: detectAnomalies()는 과거 N일간의 언급 이력을 Redis에서 읽어
+    // 오늘 수치와 비교해 급증/신규 등장을 감지한다.
+    // Redis가 없으면 anomaly.ts는 in-memory(memAccum)로 fallback하지만,
+    // Vercel 서버리스 환경에서 메모리는 cold start마다 초기화되어 이력이 항상 0이다.
+    // 결과: 기준값이 없어 거의 모든 항목이 "신규 등장"으로 잘못 분류된다.
+    // 기능이 작동하는 것처럼 보이지만 실제로는 의미 없는 데이터를 생성한다.
+    // Redis가 설정된 경우에만 anomaly를 실행해 이 허위 표시를 방지한다.
+    const hasRedis = !!(
+      process.env.UPSTASH_REDIS_REST_URL &&
+      process.env.UPSTASH_REDIS_REST_TOKEN
+    );
+    if (overviewSelected && hasRedis) {
       const todayCounts = await recordDailyMentions(all, brokerReports);
       anomalies = await detectAnomalies(todayCounts);
     }
