@@ -55,9 +55,12 @@ Z-brief/
 - 상단 "오늘의 정원엔시스" -> 본문 5개 클러스터 -> "오늘의 핵심 기사" 2건 -> 총평
 - 줄표(—), 물결(~), 이모지, "추천" 단어, 가로줄 금지 -> `render.sanitize()` 가 자동 치환·검출
 
+## 현재 구조
+
+`src/` (Python CLI)는 초기 프로토타입입니다. 현재 실제 제품은 `webapp/` (Next.js)이며, TypeScript로 독립 구현됩니다. broker research, anomaly detection, 섹션 선택, Redis 기반 brief 히스토리가 포함됩니다.
+
 ## 다음 단계
 
-- 웹앱(FastAPI/Next.js) 래퍼: 동일 파이프라인 그대로 호출하고 브라우저에 띄울 예정
 - DART API 연동으로 정원엔시스 직접 공시는 별도 경로로 보강
 - GitHub Actions 일일 스케줄
 

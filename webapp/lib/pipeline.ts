@@ -34,7 +34,7 @@ import type {
 } from "./types";
 import { SECTION_ORDER } from "./types";
 
-function findCompanyArticles(all: Article[], terms: string[]): Article[] {
+export function findCompanyArticles(all: Article[], terms: string[]): Article[] {
   return all.filter((a) =>
     terms.some(
       (t) => a.title.includes(t) || (a.summary?.includes(t) ?? false),
@@ -42,7 +42,7 @@ function findCompanyArticles(all: Article[], terms: string[]): Article[] {
   );
 }
 
-function brokerToArticle(report: BrokerReport, clusterId: string): Article {
+export function brokerToArticle(report: BrokerReport, clusterId: string): Article {
   return {
     cluster_id: clusterId,
     title: `[${report.broker} 리서치] ${report.title}`,
@@ -55,7 +55,7 @@ function brokerToArticle(report: BrokerReport, clusterId: string): Article {
   };
 }
 
-function matchBrokerReportsToClusters(
+export function matchBrokerReportsToClusters(
   reports: BrokerReport[],
   clusters: ReturnType<typeof loadClusters>["clusters"],
 ): Map<string, Article[]> {
@@ -82,7 +82,7 @@ function matchBrokerReportsToClusters(
   return out;
 }
 
-function normalizeSections(req: SectionId[] | undefined): SectionId[] {
+export function normalizeSections(req: SectionId[] | undefined): SectionId[] {
   if (!req || req.length === 0) return [...SECTION_ORDER];
   const set = new Set<SectionId>();
   for (const id of req) {
