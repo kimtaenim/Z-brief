@@ -65,15 +65,24 @@ export async function deleteBrief(id: string): Promise<boolean> {
   if (r) {
     const exists = await r.exists(briefKey(id));
     if (!exists) return false;
-    await r.del(briefKey(id));
+
+    // WHY multi(): 기존 구현은 del(briefKey) → del(recentKey) → rpush를 순차 실행했다.
+    // del(briefKey) 성공 후 나머지가 실패하면 brief는 없는데 목록에는 남는 "좀비 항목"이
+    // 생긴다. multi()로 쓰기 연산을 하나의 트랜잭션으로 묶어 원자성을 보장한다.
+    // 읽기(lrange)는 트랜잭션 밖에서 수행한다 — Redis multi()는 read-modify-write
+    // 패턴을 지원하지 않으므로, 읽기 후 쓰기의 원자성만 보장하는 최선의 접근이다.
     const list = (await r.lrange(recentKey, 0, MAX_HISTORY - 1)) as Array<string | RecentSummary>;
     const kept = list
       .map((v) => (typeof v === "string" ? (JSON.parse(v) as RecentSummary) : v))
       .filter((s) => s.id !== id);
-    await r.del(recentKey);
+
+    const pipe = r.multi();
+    pipe.del(briefKey(id));
+    pipe.del(recentKey);
     if (kept.length > 0) {
-      await r.rpush(recentKey, ...kept.map((s) => JSON.stringify(s)));
+      pipe.rpush(recentKey, ...kept.map((s) => JSON.stringify(s)));
     }
+    await pipe.exec();
     return true;
   }
   if (!memBriefs.has(id)) return false;
