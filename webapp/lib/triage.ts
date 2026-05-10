@@ -25,7 +25,7 @@ function articlesToPrompt(articles: Article[]): string {
     .join("\n");
 }
 
-function parsePicks(text: string, target: number, maxIdx: number): { index: number; reason: string }[] {
+export function parsePicks(text: string, target: number, maxIdx: number): { index: number; reason: string }[] {
   const trimmed = text.trim();
   const start = trimmed.indexOf("[");
   const end = trimmed.lastIndexOf("]");
