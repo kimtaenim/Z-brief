@@ -43,11 +43,18 @@ python -m src.main --dry-run
 
 ```
 Z-brief/
-  config/clusters.yaml   5개 클러스터 + 전역 설정
-  src/                   fetch / filter / triage / summarize / cache / render / main
-  cache/                 클러스터별 JSON 캐시 (gitignore)
-  output/                생성된 브리프 마크다운 (gitignore)
+  config/clusters.yaml      Python CLI용 클러스터 설정 (src/ 전용)
+  src/                      Python CLI prototype (초기 프로토타입, 현재 미사용)
+  cache/                    클러스터별 JSON 캐시 (gitignore)
+  output/                   생성된 브리프 마크다운 (gitignore)
+  webapp/                   실제 운영 제품 (Next.js)
+    data/clusters.yaml      webapp 전용 클러스터 설정 ← config/clusters.yaml과 별도 관리
+    data/*.json             시스템 프롬프트, 임계값, 회사 정보 등
+    lib/                    파이프라인 핵심 로직
 ```
+
+> **주의**: `config/clusters.yaml`(Python CLI)과 `webapp/data/clusters.yaml`(webapp)은
+> 독립 파일입니다. 클러스터를 추가·수정할 때 **두 파일을 모두** 업데이트하세요.
 
 ## 출력 규약 (요약)
 
