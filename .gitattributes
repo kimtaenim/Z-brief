@@ -1,0 +1,4 @@
+# WHY: Windows 환경에서 git이 LF를 CRLF로 자동 변환하며 커밋마다
+# "LF will be replaced by CRLF" 경고가 발생했다. 협업 시 diff 오염 원인이 된다.
+# text=auto: git이 플랫폼별 줄바꿈을 자동으로 처리하게 위임한다.
+* text=auto
