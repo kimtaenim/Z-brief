@@ -37,7 +37,7 @@ function makeRecord(id: string): BriefRecord {
       selectedSections: [],
       userInterest: null,
       usages: [],
-      cost: { total_usd: 0, total_krw: 0, total_input_tokens: 0, total_output_tokens: 0 },
+      cost: { per_call: [], total_usd: 0, total_krw: 0, total_input_tokens: 0, total_output_tokens: 0 },
     },
   };
 }
