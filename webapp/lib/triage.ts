@@ -1,6 +1,7 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import { getAnthropic, MODELS } from "./anthropic";
 import type { ModelUsage } from "./cost";
+import { withRetry } from "./retry";
 import {
   companyTerms,
   fillTemplate,
@@ -75,7 +76,10 @@ export async function triageCluster(
 
   const userPrompt = `클러스터: ${clusterId}\n목표 기사 수: 최대 ${targetKeep}\n\n후보:\n${articlesToPrompt(articles)}`;
 
-  const resp = await client.messages.create({
+  // WHY withRetry: Anthropic API는 트래픽 급증 시 529를 반환한다.
+  // 재시도 없으면 일시 오류가 전체 파이프라인 실패로 이어진다.
+  // triage는 클러스터당 1회 호출이므로 5개 클러스터 중 1개만 실패해도 전체가 죽는다.
+  const resp = await withRetry(() => client.messages.create({
     model: MODELS.triage,
     max_tokens: t.max_tokens,
     system: [
@@ -86,7 +90,7 @@ export async function triageCluster(
       },
     ],
     messages: [{ role: "user", content: userPrompt }],
-  });
+  }));
 
   const text = resp.content
     .filter((b): b is Anthropic.TextBlock => b.type === "text")
