@@ -73,6 +73,7 @@ export interface SummarizeOptions {
   selectedSections: SectionId[];
   userInterest?: string | null;
   anomaliesText?: string;
+  anchorDate?: string | null;
 }
 
 export interface SummarizeResult {
@@ -94,8 +95,11 @@ export async function summarizeBrief(
   const dateTimeKst = nowKstDateTime();
 
   const requestedNames = opts.selectedSections.map((s) => SECTION_LABEL[s]);
+  const dateLine = opts.anchorDate
+    ? `조회 날짜 (KST): ${opts.anchorDate} (그날 00:00~24:00 보도 기준, 생성 시각 ${dateTimeKst})`
+    : `오늘 KST 일시: ${dateTimeKst} (직전 24시간 롤링)`;
   const blocks: string[] = [
-    `오늘 KST 일시: ${dateTimeKst}`,
+    dateLine,
     "",
     `요청된 섹션 (이 섹션만 작성, 다른 섹션 작성 금지): ${requestedNames.join(", ")}`,
     "",

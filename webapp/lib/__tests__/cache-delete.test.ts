@@ -36,6 +36,7 @@ function makeRecord(id: string): BriefRecord {
       clusterCounts: {},
       selectedSections: [],
       userInterest: null,
+      anchorDate: null,
       usages: [],
       cost: { per_call: [], total_usd: 0, total_krw: 0, total_input_tokens: 0, total_output_tokens: 0 },
     },

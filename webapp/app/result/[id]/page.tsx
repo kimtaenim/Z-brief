@@ -80,6 +80,15 @@ export default function ResultPage({ params }: PageProps) {
               </h1>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-zinc-500">
                 <span>생성: {record.timeKst} (KST)</span>
+                {record.meta.anchorDate ? (
+                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] text-amber-700">
+                    조회 날짜 {record.meta.anchorDate} (그날 00:00~24:00)
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-500">
+                    직전 24h 롤링
+                  </span>
+                )}
                 {record.meta.mode === "mock" && (
                   <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-500">
                     mock

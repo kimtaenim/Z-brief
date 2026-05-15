@@ -13,7 +13,7 @@ import {
 import { loadClusters } from "./clusters";
 import { summarizeCost, type ModelUsage } from "./cost";
 import { fetchCluster } from "./fetch";
-import { filterArticles } from "./filter";
+import { filterArticles, filterArticlesByDay } from "./filter";
 import {
   companyTerms,
   loadDirectCompanies,
@@ -108,6 +108,7 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
 
   const selected = normalizeSections(req.sections);
   const userInterest = (req.userInterest ?? "").trim() || null;
+  const anchorDate = req.anchorDate?.match(/^\d{4}-\d{2}-\d{2}$/) ? req.anchorDate : null;
   const overviewSelected = selected.includes("overview");
 
   const clusterIdsNeeded = new Set<string>();
@@ -136,7 +137,9 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
   }
 
   const filteredPerCluster = fetched.map((res) =>
-    filterArticles(res.articles, t.fetch.search_window_hours),
+    anchorDate
+      ? filterArticlesByDay(res.articles, anchorDate)
+      : filterArticles(res.articles, t.fetch.search_window_hours),
   );
 
   const brokerByCluster = matchBrokerReportsToClusters(brokerReports, cfg.clusters);
@@ -194,6 +197,7 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
       selectedSections: selected,
       userInterest,
       anomaliesText: anomaliesToText(anomalies),
+      anchorDate,
     });
     usages.push(summary.usage);
 
@@ -258,7 +262,7 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
   return {
     id: uuidv4(),
     createdAt: new Date().toISOString(),
-    dateKst: nowKstDate(),
+    dateKst: anchorDate ?? nowKstDate(),
     timeKst: nowKstDateTime(),
     sections,
     fullMarkdown,
@@ -272,6 +276,7 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
       sanitizeReport,
       selectedSections: selected,
       userInterest,
+      anchorDate,
       usages,
       cost,
     },

@@ -96,6 +96,7 @@ export interface BriefRecord {
     sanitizeReport?: { replaced: Record<string, number>; violations: string[] };
     selectedSections: SectionId[];
     userInterest: string | null;
+    anchorDate: string | null;
     usages: ModelUsage[];
     cost: CostSummary;
   };
@@ -113,6 +114,7 @@ export interface RecentSummary {
 export interface GenerateRequest {
   sections: SectionId[];
   userInterest?: string;
+  anchorDate?: string; // YYYY-MM-DD (KST). 미지정 시 24h 롤링.
 }
 
 export const SECTION_ORDER: SectionId[] = [

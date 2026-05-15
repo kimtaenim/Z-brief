@@ -10,6 +10,7 @@ import type { SectionId } from "@/lib/types";
 interface Props {
   sections: SectionId[];
   userInterest: string;
+  anchorDate?: string; // YYYY-MM-DD (KST). undefined면 24h rolling
   disabled?: boolean;
   onCreated?: () => void;
 }
@@ -22,7 +23,7 @@ interface GenerateResponse {
   limit?: number;
 }
 
-export function GenerateButton({ sections, userInterest, disabled, onCreated }: Props) {
+export function GenerateButton({ sections, userInterest, anchorDate, disabled, onCreated }: Props) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +40,7 @@ export function GenerateButton({ sections, userInterest, disabled, onCreated }: 
         body: JSON.stringify({
           sections,
           userInterest: userInterest.trim() || undefined,
+          anchorDate,
         }),
         signal: controller.signal,
       });

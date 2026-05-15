@@ -20,6 +20,10 @@ const SectionEnum = z.enum([
 const Body = z.object({
   sections: z.array(SectionEnum).min(1),
   userInterest: z.string().max(2000).optional(),
+  anchorDate: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "anchorDate must be YYYY-MM-DD")
+    .optional(),
 });
 
 function getIp(req: Request): string {
@@ -54,6 +58,7 @@ export async function POST(req: Request) {
     const record = await runPipeline({
       sections: parsed.data.sections as SectionId[],
       userInterest: parsed.data.userInterest,
+      anchorDate: parsed.data.anchorDate,
     });
     await saveBrief(record);
     return NextResponse.json({

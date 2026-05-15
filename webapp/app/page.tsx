@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { DatePicker } from "@/components/DatePicker";
 import { GenerateButton } from "@/components/GenerateButton";
 import { KstClock } from "@/components/KstClock";
 import { PasswordGate } from "@/components/PasswordGate";
@@ -26,6 +27,16 @@ export default function HomePage() {
   const [selected, setSelected] = useState<Set<SectionId>>(() => new Set(SECTION_ORDER));
   const [interest, setInterest] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const todayKst = useMemo(() => {
+    const fmt = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    return fmt.format(new Date());
+  }, []);
+  const [anchorDate, setAnchorDate] = useState<string>(todayKst);
 
   const refreshAuth = useCallback(async () => {
     const res = await fetch("/api/login", { cache: "no-store" });
@@ -110,6 +121,10 @@ export default function HomePage() {
         </p>
 
         <section className="mb-6">
+          <DatePicker value={anchorDate} todayKst={todayKst} onChange={setAnchorDate} />
+        </section>
+
+        <section className="mb-6">
           <Card padding="md">
             <SectionPicker
               selected={selected}
@@ -142,6 +157,7 @@ export default function HomePage() {
           <GenerateButton
             sections={sectionsArr}
             userInterest={interest}
+            anchorDate={anchorDate === todayKst ? undefined : anchorDate}
             onCreated={refreshRecent}
           />
           <p className="mt-3 text-center text-[11px] text-zinc-400">
