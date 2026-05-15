@@ -33,6 +33,10 @@ clusters:
       - https://rss.etnews.com/Section902.xml
       - https://rss.etnews.com/Section901.xml
       - https://www.aitimes.com/rss/allArticle.xml
+      # Google News 검색 (광범위 매체 커버)
+      - https://news.google.com/rss/search?q=%22%EC%98%A8%ED%94%84%EB%A0%88%EB%AF%B8%EC%8A%A4%20AI%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%ED%94%84%EB%9D%BC%EC%9D%B4%EB%B9%97%20LLM%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%86%8C%EB%B2%84%EB%A6%B0%20AI%22&hl=ko&gl=KR&ceid=KR:ko
     focus: 도입사례, GPU·서버 가격, 보안·규제
 
   - id: physical_ai
@@ -59,6 +63,10 @@ clusters:
       - https://www.irobotnews.com/rss/S1N2.xml
       - https://www.irobotnews.com/rss/allArticle.xml
       - https://www.therobotreport.com/feed
+      # Google News 검색
+      - https://news.google.com/rss/search?q=%22%ED%94%BC%EC%A7%80%EC%BB%AC%20AI%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%8A%A4%EB%A7%88%ED%8A%B8%ED%8C%A9%ED%86%A0%EB%A6%AC%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%82%B0%EC%97%85%EC%9A%A9%20%EB%A1%9C%EB%B4%87%22&hl=ko&gl=KR&ceid=KR:ko
     focus: 신모델, 도입, 투자
 
   - id: vertical_ai
@@ -104,6 +112,10 @@ clusters:
     rss_feeds:
       - https://www.mediatoday.co.kr/rss/allArticle.xml
       - https://venturebeat.com/category/ai/feed/
+      # Google News 검색
+      - https://news.google.com/rss/search?q=%22%EB%B2%84%ED%8B%B0%EC%BB%AC%20AI%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%9D%98%EB%A3%8C%20AI%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EB%B2%95%EB%A5%A0%20AI%22&hl=ko&gl=KR&ceid=KR:ko
     focus: 인허가·임상, 도입사례, 매출 영향, 정부 정책, 뉴스룸 워크플로우
 
   - id: security_pqc
@@ -147,6 +159,10 @@ clusters:
       - https://www.bleepingcomputer.com/feed/
       - https://feeds.feedburner.com/TheHackersNews
       - https://krebsonsecurity.com/feed/
+      # Google News 검색
+      - https://news.google.com/rss/search?q=%22AI%20%EB%B3%B4%EC%95%88%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%96%91%EC%9E%90%EB%82%B4%EC%84%B1%EC%95%94%ED%98%B8%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%82%AC%EC%9D%B4%EB%B2%84%20%EB%B3%B4%EC%95%88%22&hl=ko&gl=KR&ceid=KR:ko
     focus: 침해사고, AI 모델 보안 위협, 표준 진척, 의무화, PoC, 정부 대응
 
   - id: valuation
@@ -185,6 +201,17 @@ clusters:
       - 증권사 IT 리포트
     rss_feeds:
       - https://www.mk.co.kr/rss/40300001/
+      # Google News 검색 — 클러스터 키워드
+      - https://news.google.com/rss/search?q=%22%EA%B8%B0%EC%88%A0%ED%8A%B9%EB%A1%80%EC%83%81%EC%9E%A5%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EB%A9%94%EA%B0%80%EC%A1%B4%ED%81%B4%EB%9D%BC%EC%9A%B0%EB%93%9C%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22AI%20IPO%22&hl=ko&gl=KR&ceid=KR:ko
+      # Google News 검색 — 정원엔시스 + 자회사 + 종목코드 (overview의 '오늘의 정원엔시스'에 자연 흘러감)
+      - https://news.google.com/rss/search?q=%22%EC%A0%95%EC%9B%90%EC%97%94%EC%8B%9C%EC%8A%A4%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22045510%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%97%90%EC%9D%B4%EC%95%84%EC%9D%B4%EB%84%A4%EC%9D%B4%EC%85%98%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EB%B0%94%EC%8A%A4%EC%BD%94ICT%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%A0%A0%EC%8B%9C%EC%8A%A4%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22AX707%22&hl=ko&gl=KR&ceid=KR:ko
     focus: 멀티플 변동, MSP·IDC군 비교, M&A, 기술특례, 비교 포지션
 
 forbidden_patterns:
