@@ -7,13 +7,13 @@
     "new_appearance_min": 1
   },
   "fetch": {
-    "results_per_cluster": 4,
+    "results_per_cluster": 20,
     "search_window_hours": 24,
     "broker_timeout_ms": 8000,
     "rss_timeout_ms": 10000
   },
   "summarize": {
-    "max_tokens": 1800,
+    "max_tokens": 3000,
     "article_summary_chars": 200
   },
   "triage": {
