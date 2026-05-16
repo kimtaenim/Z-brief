@@ -38,26 +38,38 @@ function nowKstDateTime(): string {
   return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")}`;
 }
 
-function articlesBlock(name: string, articles: Article[], cap: number): string {
+// WHY URL ID 치환: Google News URL이 ~80 tokens. cluster마다 출처 1줄 박으면
+// output 토큰이 호출당 수백 tokens 추가됨. LLM에는 짧은 ID(artN)만 보여주고
+// 서버 후처리에서 ID → 실제 URL 치환. output 토큰 절감 + input 토큰도 줄음.
+function articlesBlock(name: string, articles: Article[], cap: number, idFn: (url: string) => string): string {
   if (articles.length === 0) return `## ${name}\n- (오늘 수집된 기사 없음)`;
   const lines = [`## ${name}`];
   for (const a of articles) {
-    lines.push(`- (${a.language}) ${a.title} | ${a.source} | ${a.url}`);
+    const id = idFn(a.url);
+    lines.push(`- [${id}] (${a.language}) ${a.title} | ${a.source}`);
     if (a.summary) lines.push(`  요약: ${a.summary.slice(0, cap)}`);
   }
   return lines.join("\n");
 }
 
-function brokerReportsBlock(reports: BrokerReport[]): string {
+function brokerReportsBlock(reports: BrokerReport[], idFn: (url: string) => string): string {
   if (reports.length === 0) return "";
   const top = reports.slice(0, 10);
   const lines = ["## (참고) 오늘의 증권사 리서치 제목"];
   for (const r of top) {
+    const id = idFn(r.url);
     const date = r.date ? `[${r.date}]` : "";
     const cat = r.category ? `${r.category}` : "";
-    lines.push(`- ${date} ${cat} ${r.broker}: ${r.title} | ${r.url}`.replace(/\s+/g, " ").trim());
+    lines.push(`- [${id}] ${date} ${cat} ${r.broker}: ${r.title}`.replace(/\s+/g, " ").trim());
   }
   return lines.join("\n");
+}
+
+function expandUrls(markdown: string, urlMap: Map<string, string>): string {
+  return markdown.replace(/\(art(\d+)\)/g, (m, n: string) => {
+    const url = urlMap.get(`art${n}`);
+    return url ? `(${url})` : m;
+  });
 }
 
 export function buildSummarizeSystem(): string {
@@ -117,7 +129,15 @@ export async function summarizeBrief(
     blocks.push("");
   }
 
-  const broker = brokerReportsBlock(brokerReports);
+  const urlMap = new Map<string, string>();
+  let counter = 0;
+  const idFn = (url: string): string => {
+    const id = `art${++counter}`;
+    urlMap.set(id, url);
+    return id;
+  };
+
+  const broker = brokerReportsBlock(brokerReports, idFn);
   if (broker) {
     blocks.push(broker);
     blocks.push("");
@@ -125,14 +145,17 @@ export async function summarizeBrief(
 
   blocks.push(`## (참고) ${direct.primary} 직접 연관 후보`);
   if (companyArticles.length > 0) {
-    for (const a of companyArticles) blocks.push(`- ${a.title} | ${a.source} | ${a.url}`);
+    for (const a of companyArticles) {
+      const id = idFn(a.url);
+      blocks.push(`- [${id}] ${a.title} | ${a.source}`);
+    }
   } else {
     blocks.push("- (해당 기사 없음)");
   }
   blocks.push("");
 
   for (const c of clusters) {
-    blocks.push(articlesBlock(c.name, c.articles, t.summarize.article_summary_chars));
+    blocks.push(articlesBlock(c.name, c.articles, t.summarize.article_summary_chars, idFn));
     blocks.push("");
   }
 
@@ -154,10 +177,11 @@ export async function summarizeBrief(
     messages: [{ role: "user", content: blocks.join("\n") }],
   }), { delayMs: 1000 });
 
-  const text = resp.content
+  const rawText = resp.content
     .filter((b): b is Anthropic.TextBlock => b.type === "text")
     .map((b) => b.text)
     .join("");
+  const text = expandUrls(rawText, urlMap);
 
   return {
     markdown: text,
