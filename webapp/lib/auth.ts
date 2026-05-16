@@ -29,8 +29,8 @@ export function getAuthPassword(): string | null {
 
 export function dailyLimit(): number {
   const raw = process.env.DAILY_LIMIT;
-  const n = raw ? Number.parseInt(raw, 10) : 10;
-  return Number.isFinite(n) && n > 0 ? n : 10;
+  const n = raw ? Number.parseInt(raw, 10) : 50;
+  return Number.isFinite(n) && n > 0 ? n : 50;
 }
 
 export async function isAuthed(): Promise<boolean> {
