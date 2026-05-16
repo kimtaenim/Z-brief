@@ -42,6 +42,21 @@ function findCompanyArticles(all: Article[], terms: string[]): Article[] {
   );
 }
 
+function hasCompanyMention(a: Article, terms: string[]): boolean {
+  return terms.some(
+    (t) => a.title.includes(t) || (a.summary?.includes(t) ?? false),
+  );
+}
+
+// 회사명 직접 매칭 article을 cap 안쪽으로 우선 통과시킴. stable sort.
+function preferCompanyMatches(articles: Article[], terms: string[]): Article[] {
+  return [...articles].sort((a, b) => {
+    const aHit = hasCompanyMention(a, terms) ? 1 : 0;
+    const bHit = hasCompanyMention(b, terms) ? 1 : 0;
+    return bHit - aHit;
+  });
+}
+
 function brokerToArticle(report: BrokerReport, clusterId: string): Article {
   return {
     cluster_id: clusterId,
@@ -189,7 +204,8 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
         if (!clusterIdsNeeded.has(c.id)) {
           return { id: c.id, name: c.name, articles: [] };
         }
-        const candidates = filteredPerCluster[i].slice(0, t.fetch.results_per_cluster);
+        const sorted = preferCompanyMatches(filteredPerCluster[i], terms);
+        const candidates = sorted.slice(0, t.fetch.results_per_cluster);
         const result = await triageCluster(c.id, candidates, t.triage.target_keep);
         usages.push(result.usage);
         return { id: c.id, name: c.name, articles: result.articles };
@@ -230,7 +246,7 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
     runs = cfg.clusters.map((c, i) => ({
       id: c.id,
       name: c.name,
-      articles: filteredPerCluster[i].slice(0, 3),
+      articles: preferCompanyMatches(filteredPerCluster[i], terms).slice(0, 3),
     }));
     const all = runs.flatMap((r) => r.articles);
     companyArticles = findCompanyArticles(all, terms);
