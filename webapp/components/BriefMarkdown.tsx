@@ -23,7 +23,11 @@ function escapeHtml(s: string): string {
 function inline(s: string): string {
   let out = escapeHtml(s);
   out = out.replace(
-    /\bhttps?:\/\/[^\s<>"]+/g,
+    /\[([^\]]+)\]\(([^)\s]+)\)/g,
+    (_m, text, url) => `<a href="${url}" target="_blank" rel="noreferrer">${text}</a>`,
+  );
+  out = out.replace(
+    /(?<!href=")\bhttps?:\/\/[^\s<>"]+/g,
     (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`,
   );
   out = out.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
