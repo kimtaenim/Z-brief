@@ -58,7 +58,7 @@ function RecentItem({
   };
 
   return (
-    <li className="relative">
+    <li>
       <Link href={`/result/${item.id}`} className="block">
         <Card padding="sm" className="transition hover:ring-zinc-300">
           <div className="flex items-baseline justify-between gap-3">
@@ -75,43 +75,45 @@ function RecentItem({
               )}
             </div>
           </div>
-          <p className="mt-1.5 line-clamp-2 pr-8 text-[12px] leading-relaxed text-zinc-500">
+          <p className="mt-1.5 line-clamp-2 text-[12px] leading-relaxed text-zinc-500">
             {item.preview}
           </p>
-          <p className="mt-2 text-[11px] text-zinc-400">
-            {new Date(item.createdAt).toLocaleString("ko-KR", {
-              month: "short",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
+          <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-zinc-400">
+            <span>
+              {new Date(item.createdAt).toLocaleString("ko-KR", {
+                month: "short",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+            {onDelete && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                aria-label={confirming ? "한 번 더 눌러 삭제" : "이 브리프 삭제"}
+                className={`inline-flex h-6 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition active:scale-[0.96] disabled:opacity-50 ${
+                  confirming
+                    ? "bg-red-600 text-white shadow-soft"
+                    : "bg-zinc-50 text-zinc-400 ring-1 ring-zinc-200 hover:text-red-600 hover:ring-red-200"
+                }`}
+              >
+                {deleting ? (
+                  <span>삭제 중…</span>
+                ) : confirming ? (
+                  <>
+                    <TrashIcon />
+                    한 번 더
+                  </>
+                ) : (
+                  <TrashIcon />
+                )}
+              </button>
+            )}
+          </div>
         </Card>
       </Link>
-      {onDelete && (
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={deleting}
-          aria-label={confirming ? "한 번 더 눌러 삭제" : "이 브리프 삭제"}
-          className={`absolute right-3 top-3 inline-flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition active:scale-[0.96] disabled:opacity-50 ${
-            confirming
-              ? "bg-red-600 text-white shadow-soft"
-              : "bg-zinc-50 text-zinc-400 ring-1 ring-zinc-200 hover:text-red-600 hover:ring-red-200"
-          }`}
-        >
-          {deleting ? (
-            <span>삭제 중…</span>
-          ) : confirming ? (
-            <>
-              <TrashIcon />
-              한 번 더
-            </>
-          ) : (
-            <TrashIcon />
-          )}
-        </button>
-      )}
     </li>
   );
 }
