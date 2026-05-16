@@ -13,7 +13,7 @@
     "rss_timeout_ms": 10000
   },
   "summarize": {
-    "max_tokens": 3000,
+    "max_tokens": 4000,
     "article_summary_chars": 200
   },
   "triage": {
