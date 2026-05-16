@@ -58,24 +58,13 @@ function RecentItem({
   };
 
   return (
-    <li>
+    <li className="relative">
       <Link href={`/result/${item.id}`} className="block">
         <Card padding="sm" className="transition hover:ring-zinc-300">
-          <div className="flex items-baseline justify-between gap-3">
-            <p className="text-[14px] font-medium text-zinc-900">
-              {item.dateKst}
-            </p>
-            <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-              {item.mode === "mock" ? (
-                <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-zinc-500">
-                  mock
-                </span>
-              ) : (
-                <span className="text-blue-600">{formatKrw(item.costKrw)}</span>
-              )}
-            </div>
-          </div>
-          <p className="mt-1.5 line-clamp-2 text-[12px] leading-relaxed text-zinc-500">
+          <p className="pr-10 text-[14px] font-medium text-zinc-900">
+            {item.dateKst}
+          </p>
+          <p className="mt-1.5 line-clamp-2 pr-10 text-[12px] leading-relaxed text-zinc-500">
             {item.preview}
           </p>
           <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-zinc-400">
@@ -87,33 +76,40 @@ function RecentItem({
                 minute: "2-digit",
               })}
             </span>
-            {onDelete && (
-              <button
-                type="button"
-                onClick={handleDelete}
-                disabled={deleting}
-                aria-label={confirming ? "한 번 더 눌러 삭제" : "이 브리프 삭제"}
-                className={`inline-flex h-6 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition active:scale-[0.96] disabled:opacity-50 ${
-                  confirming
-                    ? "bg-red-600 text-white shadow-soft"
-                    : "bg-zinc-50 text-zinc-400 ring-1 ring-zinc-200 hover:text-red-600 hover:ring-red-200"
-                }`}
-              >
-                {deleting ? (
-                  <span>삭제 중…</span>
-                ) : confirming ? (
-                  <>
-                    <TrashIcon />
-                    한 번 더
-                  </>
-                ) : (
-                  <TrashIcon />
-                )}
-              </button>
+            {item.mode === "mock" ? (
+              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-zinc-500">
+                mock
+              </span>
+            ) : (
+              <span className="text-blue-600">{formatKrw(item.costKrw)}</span>
             )}
           </div>
         </Card>
       </Link>
+      {onDelete && (
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={deleting}
+          aria-label={confirming ? "한 번 더 눌러 삭제" : "이 브리프 삭제"}
+          className={`absolute right-3 top-3 inline-flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-medium transition active:scale-[0.96] disabled:opacity-50 ${
+            confirming
+              ? "bg-red-600 text-white shadow-soft"
+              : "bg-zinc-50 text-zinc-400 ring-1 ring-zinc-200 hover:text-red-600 hover:ring-red-200"
+          }`}
+        >
+          {deleting ? (
+            <span>삭제 중…</span>
+          ) : confirming ? (
+            <>
+              <TrashIcon />
+              한 번 더
+            </>
+          ) : (
+            <TrashIcon />
+          )}
+        </button>
+      )}
     </li>
   );
 }
