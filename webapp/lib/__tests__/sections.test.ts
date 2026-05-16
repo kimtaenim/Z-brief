@@ -29,7 +29,7 @@ RSS 피드 정상 수신.
 describe("splitSections", () => {
   it("returns all 6 sections when all selected", () => {
     const sections = splitSections(FULL_MARKDOWN, SECTION_ORDER);
-    expect(sections).toHaveLength(6);
+    expect(sections).toHaveLength(7);
   });
 
   it("marks selected sections correctly", () => {
@@ -65,7 +65,7 @@ describe("splitSections", () => {
 
   it("handles empty markdown input", () => {
     const sections = splitSections("", SECTION_ORDER);
-    expect(sections).toHaveLength(6);
+    expect(sections).toHaveLength(7);
     for (const s of sections) {
       expect(s.markdown).toBe("");
     }

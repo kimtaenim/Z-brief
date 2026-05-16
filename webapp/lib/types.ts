@@ -70,7 +70,8 @@ export type SectionId =
   | "physical_ai"
   | "vertical_ai"
   | "security_pqc"
-  | "valuation";
+  | "valuation"
+  | "energy";
 
 export interface SectionContent {
   id: SectionId;
@@ -124,6 +125,7 @@ export const SECTION_ORDER: SectionId[] = [
   "vertical_ai",
   "security_pqc",
   "valuation",
+  "energy",
 ];
 
 export const SECTION_LABEL: Record<SectionId, string> = {
@@ -133,6 +135,7 @@ export const SECTION_LABEL: Record<SectionId, string> = {
   vertical_ai: "버티컬AI",
   security_pqc: "보안과PQC",
   valuation: "밸류에이션",
+  energy: "에너지",
 };
 
 export const SECTION_DESCRIPTION: Record<SectionId, string> = {
@@ -142,4 +145,5 @@ export const SECTION_DESCRIPTION: Record<SectionId, string> = {
   vertical_ai: "의료·법률·언론·교육 등 도메인 LLM",
   security_pqc: "사이버 보안, AI 보안, 양자내성암호",
   valuation: "AI 인프라 멀티플, MSP·IDC, M&A·IPO",
+  energy: "EMS·BEMS·FEMS·DCIM, 데이터센터 에너지",
 };

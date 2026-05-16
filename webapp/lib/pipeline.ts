@@ -97,6 +97,7 @@ const CLUSTER_OF_SECTION: Partial<Record<SectionId, string>> = {
   vertical_ai: "vertical_ai",
   security_pqc: "security_pqc",
   valuation: "valuation",
+  energy: "energy",
 };
 
 export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {

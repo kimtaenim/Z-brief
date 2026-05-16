@@ -15,6 +15,7 @@ const SectionEnum = z.enum([
   "vertical_ai",
   "security_pqc",
   "valuation",
+  "energy",
 ]);
 
 const Body = z.object({

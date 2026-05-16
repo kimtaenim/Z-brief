@@ -204,11 +204,10 @@ clusters:
       - 삼일KPMG
       - 증권사 IT 리포트
     rss_feeds:
-      # Google News 검색 — 정원엔시스 + 자회사 + 종목코드 (results_per_cluster cap에서 우선 통과되도록 최상단)
+      # Google News 검색 — 정원엔시스 + 자회사 + 종목코드 (바스코ICT는 energy cluster로 이동)
       - https://news.google.com/rss/search?q=%22%EC%A0%95%EC%9B%90%EC%97%94%EC%8B%9C%EC%8A%A4%22&hl=ko&gl=KR&ceid=KR:ko
       - https://news.google.com/rss/search?q=%22045510%22&hl=ko&gl=KR&ceid=KR:ko
       - https://news.google.com/rss/search?q=%22%EC%97%90%EC%9D%B4%EC%95%84%EC%9D%B4%EB%84%A4%EC%9D%B4%EC%85%98%22&hl=ko&gl=KR&ceid=KR:ko
-      - https://news.google.com/rss/search?q=%22%EB%B0%94%EC%8A%A4%EC%BD%94ICT%22&hl=ko&gl=KR&ceid=KR:ko
       - https://news.google.com/rss/search?q=%22%EC%A0%A0%EC%8B%9C%EC%8A%A4%22&hl=ko&gl=KR&ceid=KR:ko
       - https://news.google.com/rss/search?q=%22AX707%22&hl=ko&gl=KR&ceid=KR:ko
       # Google News 검색 — 클러스터 키워드
@@ -217,6 +216,38 @@ clusters:
       - https://news.google.com/rss/search?q=%22AI%20IPO%22&hl=ko&gl=KR&ceid=KR:ko
       - https://www.mk.co.kr/rss/40300001/
     focus: 멀티플 변동, MSP·IDC군 비교, M&A, 기술특례, 비교 포지션
+
+  - id: energy
+    name: 에너지
+    keywords_ko:
+      - EMS
+      - BEMS
+      - FEMS
+      - DCIM
+      - 데이터센터
+      - 에너지관리시스템
+      - 빌딩에너지
+      - 공장에너지
+      - 데이터센터인프라
+    keywords_en:
+      - energy management system
+      - building energy
+      - factory energy management
+      - data center infrastructure management
+    sources:
+      - 전자신문 에너지
+      - 한국에너지신문
+      - 데이터넷
+    rss_feeds:
+      # Google News 검색 — 바스코ICT는 정원엔시스 자회사 (에너지·데이터센터 인프라 도메인)
+      - https://news.google.com/rss/search?q=%22%EB%B0%94%EC%8A%A4%EC%BD%94ICT%22&hl=ko&gl=KR&ceid=KR:ko
+      # Google News 검색 — energy cluster 키워드
+      - https://news.google.com/rss/search?q=%22DCIM%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%84%BC%ED%84%B0%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22BEMS%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22FEMS%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EC%97%90%EB%84%88%EC%A7%80%EA%B4%80%EB%A6%AC%EC%8B%9C%EC%8A%A4%ED%85%9C%22&hl=ko&gl=KR&ceid=KR:ko
+    focus: 데이터센터·빌딩·공장 에너지관리, 바스코ICT 사업 영역
 
 forbidden_patterns:
   description: 출력 본문에서 절대 등장 금지. render.py에서 정규식 검사.
