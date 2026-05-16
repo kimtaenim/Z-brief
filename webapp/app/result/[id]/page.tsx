@@ -94,9 +94,6 @@ export default function ResultPage({ params }: PageProps) {
                     mock
                   </span>
                 )}
-                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] text-blue-600">
-                  {record.meta.selectedSections.length}개 섹션
-                </span>
               </div>
               {record.meta.userInterest && (
                 <p className="mt-3 rounded-2xl bg-blue-50 px-4 py-3 text-[12px] leading-relaxed text-blue-900">
@@ -127,7 +124,7 @@ export default function ResultPage({ params }: PageProps) {
             {record.meta.feedReports.some((r) => !r.ok) && (
               <details className="mt-6 rounded-2xl bg-white p-4 text-[12px] text-zinc-600 ring-1 ring-zinc-200">
                 <summary className="cursor-pointer font-medium text-zinc-800">
-                  깨진 RSS 피드 ({record.meta.feedReports.filter((r) => !r.ok).length}건)
+                  깨진 RSS 피드
                 </summary>
                 <ul className="mt-3 space-y-1.5">
                   {record.meta.feedReports
