@@ -67,6 +67,7 @@ export interface ClusterRunOutput {
 export type SectionId =
   | "overview"
   | "pr_ir"
+  | "server_it_infra"
   | "energy_ai"
   | "medical_ai"
   | "physical_ai"
@@ -121,6 +122,7 @@ export interface GenerateRequest {
 export const SECTION_ORDER: SectionId[] = [
   "overview",
   "pr_ir",
+  "server_it_infra",
   "energy_ai",
   "medical_ai",
   "physical_ai",
@@ -131,6 +133,7 @@ export const SECTION_ORDER: SectionId[] = [
 export const SECTION_LABEL: Record<SectionId, string> = {
   overview: "종합",
   pr_ir: "회사 PR과 IR",
+  server_it_infra: "서버와 IT 인프라",
   energy_ai: "에너지AI",
   medical_ai: "의료AI",
   physical_ai: "피지컬AI와 로봇",
@@ -141,6 +144,7 @@ export const SECTION_LABEL: Record<SectionId, string> = {
 export const SECTION_DESCRIPTION: Record<SectionId, string> = {
   overview: "회사 직접 동향 + 특이사항 + 증권사 모닝브리프 + 핵심 기사 + 총평",
   pr_ir: "정원엔시스·자회사·기술특례·IPO·코스닥 AI",
+  server_it_infra: "서버·온프레미스·IT/AI 인프라·MSP 시장",
   energy_ai: "EMS·BEMS·FEMS·DCIM, 데이터센터 에너지",
   medical_ai: "의료영상·진단·신약개발·임상·헬스케어 AI",
   physical_ai: "휴머노이드·자율주행·산업·협동 로봇",

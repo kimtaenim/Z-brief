@@ -93,6 +93,7 @@ function normalizeSections(req: SectionId[] | undefined): SectionId[] {
 
 const CLUSTER_OF_SECTION: Partial<Record<SectionId, string>> = {
   pr_ir: "pr_ir",
+  server_it_infra: "server_it_infra",
   energy_ai: "energy_ai",
   medical_ai: "medical_ai",
   physical_ai: "physical_ai",

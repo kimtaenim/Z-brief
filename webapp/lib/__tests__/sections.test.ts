@@ -14,6 +14,9 @@ RSS 피드 정상 수신.
 ## 회사 PR과 IR
 PR/IR 클러스터 내용입니다.
 
+## 서버와 IT 인프라
+서버 인프라 내용입니다.
+
 ## 에너지AI
 에너지 클러스터 내용입니다.
 
@@ -30,9 +33,9 @@ PR/IR 클러스터 내용입니다.
 지식 클러스터 내용입니다.`;
 
 describe("splitSections", () => {
-  it("returns all 7 sections when all selected", () => {
+  it("returns all 8 sections when all selected", () => {
     const sections = splitSections(FULL_MARKDOWN, SECTION_ORDER);
-    expect(sections).toHaveLength(7);
+    expect(sections).toHaveLength(8);
   });
 
   it("marks selected sections correctly", () => {
@@ -68,7 +71,7 @@ describe("splitSections", () => {
 
   it("handles empty markdown input", () => {
     const sections = splitSections("", SECTION_ORDER);
-    expect(sections).toHaveLength(7);
+    expect(sections).toHaveLength(8);
     for (const s of sections) {
       expect(s.markdown).toBe("");
     }

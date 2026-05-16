@@ -11,6 +11,7 @@ export const maxDuration = 120;
 const SectionEnum = z.enum([
   "overview",
   "pr_ir",
+  "server_it_infra",
   "energy_ai",
   "medical_ai",
   "physical_ai",

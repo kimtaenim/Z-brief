@@ -187,6 +187,26 @@ clusters:
       - https://www.mk.co.kr/rss/40300001/
     focus: 멀티플 변동, MSP·IDC군 비교, M&A, 기술특례, 비교 포지션
 
+  - id: server_it_infra
+    name: 서버와 IT 인프라
+    keywords_ko:
+      - 서버
+      - 온프레미스
+      - IT 인프라
+      - AI 인프라
+      - 클라우드
+      - 클라우드 MSP
+    keywords_en:
+      - server
+      - on-premise
+      - IT infrastructure
+      - AI infrastructure
+      - cloud
+      - cloud MSP
+      - managed service provider
+    rss_feeds: []
+    focus: 서버·온프레미스·IT/AI 인프라·MSP 시장 동향
+
 forbidden_patterns:
   description: 출력 본문에서 절대 등장 금지. render.py에서 정규식 검사.
   literal:
