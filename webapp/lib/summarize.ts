@@ -65,6 +65,44 @@ function brokerReportsBlock(reports: BrokerReport[], idFn: (url: string) => stri
   return lines.join("\n");
 }
 
+// WHY sanitizeLinkText: 기사 제목에 "[주간 IPO]" 같은 nested 대괄호가 들어가면
+// markdown 링크 파서가 깨져 raw URL이 그대로 화면 노출됨.
+// expandUrls 직전에 (artN) 패턴 직전 link text 안의 [/]를 「/」로 swap해
+// markdown 링크 구조를 보존한다. LLM이 입력 article title을 그대로 복사할 때
+// 발생하는 회귀를 코드 단에서 막는 fallback.
+function sanitizeLinkText(md: string): string {
+  const re = /\(art\d+\)/g;
+  let result = "";
+  let lastEnd = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(md)) !== null) {
+    const parenStart = m.index;
+    if (md[parenStart - 1] !== "]") continue;
+    const bracketEnd = parenStart - 1;
+    let depth = 0;
+    let bracketStart = -1;
+    for (let j = bracketEnd - 1; j >= lastEnd; j--) {
+      const ch = md[j];
+      if (ch === "]") depth++;
+      else if (ch === "[") {
+        if (depth === 0) {
+          bracketStart = j;
+          break;
+        }
+        depth--;
+      }
+    }
+    if (bracketStart < 0) continue;
+    result += md.slice(lastEnd, bracketStart + 1);
+    const linkText = md.slice(bracketStart + 1, bracketEnd);
+    result += linkText.replace(/\[/g, "「").replace(/\]/g, "」");
+    result += md.slice(bracketEnd, m.index + m[0].length);
+    lastEnd = m.index + m[0].length;
+  }
+  result += md.slice(lastEnd);
+  return result;
+}
+
 function expandUrls(markdown: string, urlMap: Map<string, string>): string {
   return markdown.replace(/\(art(\d+)\)/g, (m, n: string) => {
     const url = urlMap.get(`art${n}`);
@@ -181,7 +219,7 @@ export async function summarizeBrief(
     .filter((b): b is Anthropic.TextBlock => b.type === "text")
     .map((b) => b.text)
     .join("");
-  const text = expandUrls(rawText, urlMap);
+  const text = expandUrls(sanitizeLinkText(rawText), urlMap);
 
   return {
     markdown: text,
