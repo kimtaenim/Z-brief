@@ -50,7 +50,7 @@ function articlesBlock(name: string, articles: Article[], cap: number): string {
 
 function brokerReportsBlock(reports: BrokerReport[]): string {
   if (reports.length === 0) return "";
-  const top = reports.slice(0, 30);
+  const top = reports.slice(0, 10);
   const lines = ["## (참고) 오늘의 증권사 리서치 제목"];
   for (const r of top) {
     const date = r.date ? `[${r.date}]` : "";

@@ -7,7 +7,7 @@
     "new_appearance_min": 1
   },
   "fetch": {
-    "results_per_cluster": 20,
+    "results_per_cluster": 10,
     "search_window_hours": 24,
     "broker_timeout_ms": 8000,
     "rss_timeout_ms": 10000

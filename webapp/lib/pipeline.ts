@@ -55,31 +55,50 @@ function brokerToArticle(report: BrokerReport, clusterId: string): Article {
   };
 }
 
+function scoreBrokerReport(
+  r: BrokerReport,
+  clusters: ReturnType<typeof loadClusters>["clusters"],
+): { bestId: string | null; bestScore: number } {
+  const haystack = `${r.title} ${r.category ?? ""}`.toLowerCase();
+  let bestId: string | null = null;
+  let bestScore = 0;
+  for (const c of clusters) {
+    const kws = [...(c.keywords_ko ?? []), ...(c.keywords_en ?? [])];
+    let score = 0;
+    for (const kw of kws) {
+      if (haystack.includes(kw.toLowerCase())) score += 1;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestId = c.id;
+    }
+  }
+  return { bestId, bestScore };
+}
+
 function matchBrokerReportsToClusters(
   reports: BrokerReport[],
   clusters: ReturnType<typeof loadClusters>["clusters"],
 ): Map<string, Article[]> {
   const out = new Map<string, Article[]>();
   for (const c of clusters) out.set(c.id, []);
-
   for (const r of reports) {
-    const haystack = `${r.title} ${r.category ?? ""}`.toLowerCase();
-    let bestId: string | null = null;
-    let bestScore = 0;
-    for (const c of clusters) {
-      const kws = [...(c.keywords_ko ?? []), ...(c.keywords_en ?? [])];
-      let score = 0;
-      for (const kw of kws) {
-        if (haystack.includes(kw.toLowerCase())) score += 1;
-      }
-      if (score > bestScore) {
-        bestScore = score;
-        bestId = c.id;
-      }
-    }
+    const { bestId } = scoreBrokerReport(r, clusters);
     if (bestId) out.get(bestId)!.push(brokerToArticle(r, bestId));
   }
   return out;
+}
+
+function rankBrokerReportsByRelevance(
+  reports: BrokerReport[],
+  clusters: ReturnType<typeof loadClusters>["clusters"],
+  topN: number,
+): BrokerReport[] {
+  return reports
+    .map((r) => ({ r, score: scoreBrokerReport(r, clusters).bestScore }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, topN)
+    .map((x) => x.r);
 }
 
 function normalizeSections(req: SectionId[] | undefined): SectionId[] {
@@ -195,7 +214,8 @@ export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {
       anomalies = await detectAnomalies(todayCounts);
     }
 
-    const summary = await summarizeBrief(runs, companyArticles, brokerReports, {
+    const rankedForSonnet = rankBrokerReportsByRelevance(brokerReports, cfg.clusters, 10);
+    const summary = await summarizeBrief(runs, companyArticles, rankedForSonnet, {
       selectedSections: selected,
       userInterest,
       anomaliesText: anomaliesToText(anomalies),
