@@ -92,12 +92,12 @@ function normalizeSections(req: SectionId[] | undefined): SectionId[] {
 }
 
 const CLUSTER_OF_SECTION: Partial<Record<SectionId, string>> = {
-  onprem_ai: "onprem_ai",
+  pr_ir: "pr_ir",
+  energy_ai: "energy_ai",
+  medical_ai: "medical_ai",
   physical_ai: "physical_ai",
-  vertical_ai: "vertical_ai",
   security_pqc: "security_pqc",
-  valuation: "valuation",
-  energy: "energy",
+  knowledge_onto: "knowledge_onto",
 };
 
 export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {

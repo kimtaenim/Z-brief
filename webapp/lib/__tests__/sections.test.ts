@@ -11,34 +11,37 @@ const FULL_MARKDOWN = `# 정원엔시스 IR Brief - 2026-05-09
 ### 총평
 RSS 피드 정상 수신.
 
-## 온프레미스AI
-온프레미스 AI 클러스터 내용입니다.
+## 회사 PR과 IR
+PR/IR 클러스터 내용입니다.
 
-## 피지컬AI
-피지컬 AI 클러스터 내용입니다.
+## 에너지AI
+에너지 클러스터 내용입니다.
 
-## 버티컬AI
-버티컬 AI 클러스터 내용입니다.
+## 의료AI
+의료 클러스터 내용입니다.
 
-## 보안과PQC
+## 피지컬AI와 로봇
+로봇 클러스터 내용입니다.
+
+## 보안과 PQC
 보안 클러스터 내용입니다.
 
-## 밸류에이션
-밸류에이션 클러스터 내용입니다.`;
+## 지식과 온톨로지
+지식 클러스터 내용입니다.`;
 
 describe("splitSections", () => {
-  it("returns all 6 sections when all selected", () => {
+  it("returns all 7 sections when all selected", () => {
     const sections = splitSections(FULL_MARKDOWN, SECTION_ORDER);
     expect(sections).toHaveLength(7);
   });
 
   it("marks selected sections correctly", () => {
-    const sections = splitSections(FULL_MARKDOWN, ["overview", "onprem_ai"]);
+    const sections = splitSections(FULL_MARKDOWN, ["overview", "pr_ir"]);
     const overview = sections.find((s) => s.id === "overview");
-    const onprem = sections.find((s) => s.id === "onprem_ai");
+    const pr = sections.find((s) => s.id === "pr_ir");
     const physical = sections.find((s) => s.id === "physical_ai");
     expect(overview?.selected).toBe(true);
-    expect(onprem?.selected).toBe(true);
+    expect(pr?.selected).toBe(true);
     expect(physical?.selected).toBe(false);
   });
 
@@ -57,7 +60,7 @@ describe("splitSections", () => {
   });
 
   it("returns empty markdown for unmatched section header variant", () => {
-    const malformed = `## 종합 (요약)\n내용\n\n## 온프레미스AI\n온프레미스 내용`;
+    const malformed = `## 종합 (요약)\n내용\n\n## 회사 PR과 IR\nPR 내용`;
     const sections = splitSections(malformed, SECTION_ORDER);
     const overview = sections.find((s) => s.id === "overview");
     expect(overview?.markdown).toBe("");
@@ -75,7 +78,7 @@ describe("splitSections", () => {
     const sections = splitSections(FULL_MARKDOWN, SECTION_ORDER);
     const overview = sections.find((s) => s.id === "overview");
     expect(overview?.markdown).toContain("### 오늘의 정원엔시스");
-    const onprem = sections.find((s) => s.id === "onprem_ai");
-    expect(onprem?.markdown).not.toContain("### 오늘의 정원엔시스");
+    const pr = sections.find((s) => s.id === "pr_ir");
+    expect(pr?.markdown).not.toContain("### 오늘의 정원엔시스");
   });
 });

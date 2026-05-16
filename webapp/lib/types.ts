@@ -66,12 +66,12 @@ export interface ClusterRunOutput {
 
 export type SectionId =
   | "overview"
-  | "onprem_ai"
+  | "pr_ir"
+  | "energy_ai"
+  | "medical_ai"
   | "physical_ai"
-  | "vertical_ai"
   | "security_pqc"
-  | "valuation"
-  | "energy";
+  | "knowledge_onto";
 
 export interface SectionContent {
   id: SectionId;
@@ -120,30 +120,30 @@ export interface GenerateRequest {
 
 export const SECTION_ORDER: SectionId[] = [
   "overview",
-  "onprem_ai",
+  "pr_ir",
+  "energy_ai",
+  "medical_ai",
   "physical_ai",
-  "vertical_ai",
   "security_pqc",
-  "valuation",
-  "energy",
+  "knowledge_onto",
 ];
 
 export const SECTION_LABEL: Record<SectionId, string> = {
   overview: "종합",
-  onprem_ai: "온프레미스AI",
-  physical_ai: "피지컬AI",
-  vertical_ai: "버티컬AI",
-  security_pqc: "보안과PQC",
-  valuation: "밸류에이션",
-  energy: "에너지",
+  pr_ir: "회사 PR과 IR",
+  energy_ai: "에너지AI",
+  medical_ai: "의료AI",
+  physical_ai: "피지컬AI와 로봇",
+  security_pqc: "보안과 PQC",
+  knowledge_onto: "지식과 온톨로지",
 };
 
 export const SECTION_DESCRIPTION: Record<SectionId, string> = {
   overview: "회사 직접 동향 + 특이사항 + 증권사 모닝브리프 + 핵심 기사 + 총평",
-  onprem_ai: "프라이빗 LLM, AI 어플라이언스, 소버린 AI",
-  physical_ai: "로봇, 스마트팩토리, 비전 AI",
-  vertical_ai: "의료·법률·언론·교육 등 도메인 LLM",
-  security_pqc: "사이버 보안, AI 보안, 양자내성암호",
-  valuation: "AI 인프라 멀티플, MSP·IDC, M&A·IPO",
-  energy: "EMS·BEMS·FEMS·DCIM, 데이터센터 에너지",
+  pr_ir: "정원엔시스·자회사·기술특례·IPO·코스닥 AI",
+  energy_ai: "EMS·BEMS·FEMS·DCIM, 데이터센터 에너지",
+  medical_ai: "의료영상·진단·신약개발·임상·헬스케어 AI",
+  physical_ai: "휴머노이드·자율주행·산업·협동 로봇",
+  security_pqc: "사이버 보안·AI 보안·PQC·NIST 표준",
+  knowledge_onto: "지식 그래프·온톨로지·시맨틱 검색·Palantir",
 };

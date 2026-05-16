@@ -10,12 +10,12 @@ export const maxDuration = 120;
 
 const SectionEnum = z.enum([
   "overview",
-  "onprem_ai",
+  "pr_ir",
+  "energy_ai",
+  "medical_ai",
   "physical_ai",
-  "vertical_ai",
   "security_pqc",
-  "valuation",
-  "energy",
+  "knowledge_onto",
 ]);
 
 const Body = z.object({
