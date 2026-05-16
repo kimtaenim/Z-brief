@@ -94,6 +94,9 @@ export default function ResultPage({ params }: PageProps) {
                     mock
                   </span>
                 )}
+                <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] text-blue-600">
+                  {record.meta.selectedSections.length}개 섹션
+                </span>
               </div>
               {record.meta.userInterest && (
                 <p className="mt-3 rounded-2xl bg-blue-50 px-4 py-3 text-[12px] leading-relaxed text-blue-900">
