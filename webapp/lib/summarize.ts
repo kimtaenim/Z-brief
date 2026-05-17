@@ -10,6 +10,7 @@ import {
 } from "./loaders";
 import type { ModelUsage } from "./cost";
 import type { BrokerReport } from "./broker_research";
+import { normalizeMediaSource } from "./media_aliases";
 import type { Article, ClusterRunOutput, SectionId } from "./types";
 import { SECTION_LABEL } from "./types";
 
@@ -46,7 +47,7 @@ function articlesBlock(name: string, articles: Article[], cap: number, idFn: (ur
   const lines = [`## ${name}`];
   for (const a of articles) {
     const id = idFn(a.url);
-    lines.push(`- [${id}] (${a.language}) ${a.title} | ${a.source}`);
+    lines.push(`- [${id}] (${a.language}) ${a.title} | ${normalizeMediaSource(a.source)}`);
     if (a.summary) lines.push(`  요약: ${a.summary.slice(0, cap)}`);
   }
   return lines.join("\n");
@@ -185,7 +186,7 @@ export async function summarizeBrief(
   if (companyArticles.length > 0) {
     for (const a of companyArticles) {
       const id = idFn(a.url);
-      blocks.push(`- [${id}] ${a.title} | ${a.source}`);
+      blocks.push(`- [${id}] ${a.title} | ${normalizeMediaSource(a.source)}`);
     }
   } else {
     blocks.push("- (해당 기사 없음)");
