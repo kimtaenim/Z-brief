@@ -57,7 +57,10 @@ export default function HomePage() {
       if (raw) {
         const parsed = JSON.parse(raw) as { sections?: SectionId[]; interest?: string };
         if (Array.isArray(parsed.sections) && parsed.sections.length > 0) {
-          setSelected(new Set(parsed.sections));
+          // 구 selection에는 deep_learning_mlops가 없을 수 있으므로 디폴트로 체크.
+          const next = new Set(parsed.sections);
+          if (!next.has("deep_learning_mlops")) next.add("deep_learning_mlops");
+          setSelected(next);
         }
         if (typeof parsed.interest === "string") setInterest(parsed.interest);
       }
