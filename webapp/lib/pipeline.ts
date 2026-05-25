@@ -133,6 +133,7 @@ const CLUSTER_OF_SECTION: Partial<Record<SectionId, string>> = {
   physical_ai: "physical_ai",
   security_pqc: "security_pqc",
   knowledge_onto: "knowledge_onto",
+  deep_learning_mlops: "deep_learning_mlops",
 };
 
 export async function runPipeline(req: GenerateRequest): Promise<BriefRecord> {

@@ -30,12 +30,15 @@ PR/IR 클러스터 내용입니다.
 보안 클러스터 내용입니다.
 
 ## 지식과 온톨로지
-지식 클러스터 내용입니다.`;
+지식 클러스터 내용입니다.
+
+## 딥러닝과 MLOps
+딥러닝 클러스터 내용입니다.`;
 
 describe("splitSections", () => {
-  it("returns all 8 sections when all selected", () => {
+  it("returns all 9 sections when all selected", () => {
     const sections = splitSections(FULL_MARKDOWN, SECTION_ORDER);
-    expect(sections).toHaveLength(8);
+    expect(sections).toHaveLength(9);
   });
 
   it("marks selected sections correctly", () => {
@@ -71,7 +74,7 @@ describe("splitSections", () => {
 
   it("handles empty markdown input", () => {
     const sections = splitSections("", SECTION_ORDER);
-    expect(sections).toHaveLength(8);
+    expect(sections).toHaveLength(9);
     for (const s of sections) {
       expect(s.markdown).toBe("");
     }

@@ -17,6 +17,7 @@ const SectionEnum = z.enum([
   "physical_ai",
   "security_pqc",
   "knowledge_onto",
+  "deep_learning_mlops",
 ]);
 
 const Body = z.object({

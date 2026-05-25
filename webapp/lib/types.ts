@@ -72,7 +72,8 @@ export type SectionId =
   | "medical_ai"
   | "physical_ai"
   | "security_pqc"
-  | "knowledge_onto";
+  | "knowledge_onto"
+  | "deep_learning_mlops";
 
 export interface SectionContent {
   id: SectionId;
@@ -128,6 +129,7 @@ export const SECTION_ORDER: SectionId[] = [
   "physical_ai",
   "security_pqc",
   "knowledge_onto",
+  "deep_learning_mlops",
 ];
 
 export const SECTION_LABEL: Record<SectionId, string> = {
@@ -139,6 +141,7 @@ export const SECTION_LABEL: Record<SectionId, string> = {
   physical_ai: "피지컬AI와 로봇",
   security_pqc: "보안과 PQC",
   knowledge_onto: "지식과 온톨로지",
+  deep_learning_mlops: "딥러닝과 MLOps",
 };
 
 export const SECTION_DESCRIPTION: Record<SectionId, string> = {
@@ -150,4 +153,5 @@ export const SECTION_DESCRIPTION: Record<SectionId, string> = {
   physical_ai: "휴머노이드·자율주행·산업·협동 로봇",
   security_pqc: "사이버 보안·AI 보안·PQC·NIST 표준",
   knowledge_onto: "지식 그래프·온톨로지·시맨틱 검색·Palantir",
+  deep_learning_mlops: "딥러닝 모델·MLOps·AI 인프라 학습/배포/운영",
 };

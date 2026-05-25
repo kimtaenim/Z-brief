@@ -207,6 +207,56 @@ clusters:
     rss_feeds: []
     focus: 서버·온프레미스·IT/AI 인프라·MSP 시장 동향
 
+  - id: deep_learning_mlops
+    name: 딥러닝과 MLOps
+    keywords_ko:
+      - 딥러닝
+      - 뉴럴 네트워크
+      - 파운데이션 모델
+      - 거대언어모델
+      - 모델 학습
+      - 모델 추론
+      - 모델 서빙
+      - 모델 배포
+      - MLOps
+      - 데이터 라벨링
+      - 학습 데이터
+      - 데이터셋
+      - 모델 평가
+      - 드리프트
+      - ML 모니터링
+      - OpenAI
+      - Anthropic
+      - 허깅페이스
+    keywords_en:
+      - deep learning
+      - neural network
+      - foundation model
+      - LLM
+      - vision model
+      - model training
+      - model inference
+      - model serving
+      - model deployment
+      - MLOps
+      - ML operations
+      - data labeling
+      - dataset
+      - model evaluation
+      - drift
+      - ML monitoring
+      - OpenAI
+      - Anthropic
+      - HuggingFace
+      - Stability AI
+      - Databricks
+    rss_feeds:
+      - https://techcrunch.com/category/artificial-intelligence/feed/
+      - https://venturebeat.com/category/ai/feed/
+      - https://www.technologyreview.com/feed/
+      - https://huggingface.co/blog/feed.xml
+    focus: 딥러닝·MLOps·AI 인프라 학습/배포/운영 (server_it_infra 하드웨어·MSP와 구분)
+
 forbidden_patterns:
   description: 출력 본문에서 절대 등장 금지. render.py에서 정규식 검사.
   literal:

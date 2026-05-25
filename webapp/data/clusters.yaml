@@ -220,6 +220,67 @@ clusters:
       - https://news.google.com/rss/search?q=%22%EC%8B%9C%EB%A7%A8%ED%8B%B1%20%EA%B2%80%EC%83%89%22&hl=ko&gl=KR&ceid=KR:ko
     focus: 지식 그래프·온톨로지·시맨틱 검색·정보 통합 도구
 
+  - id: deep_learning_mlops
+    name: 딥러닝과 MLOps
+    keywords_ko:
+      - 딥러닝
+      - 뉴럴 네트워크
+      - 파운데이션 모델
+      - 거대언어모델
+      - 비전 모델
+      - 모델 학습
+      - 모델 추론
+      - 모델 서빙
+      - 모델 배포
+      - MLOps
+      - 데이터 라벨링
+      - 학습 데이터
+      - 데이터셋
+      - 모델 평가
+      - 드리프트
+      - ML 모니터링
+      - GPU 학습
+      - TPU
+      - OpenAI
+      - Anthropic
+      - 허깅페이스
+      - Stability AI
+      - Databricks
+    keywords_en:
+      - deep learning
+      - neural network
+      - foundation model
+      - large language model
+      - LLM
+      - vision model
+      - model training
+      - model inference
+      - model serving
+      - model deployment
+      - MLOps
+      - ML operations
+      - data labeling
+      - dataset
+      - model evaluation
+      - drift
+      - ML monitoring
+      - OpenAI
+      - Anthropic
+      - HuggingFace
+      - Stability AI
+      - Databricks
+    rss_feeds:
+      - https://techcrunch.com/category/artificial-intelligence/feed/
+      - https://venturebeat.com/category/ai/feed/
+      - https://www.technologyreview.com/feed/
+      - https://huggingface.co/blog/feed.xml
+      - https://news.google.com/rss/search?q=%22%EB%94%A5%EB%9F%AC%EB%8B%9D%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22MLOps%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%ED%8C%8C%EC%9A%B4%EB%8D%94%EC%9D%B4%EC%85%98%20%EB%AA%A8%EB%8D%B8%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%EB%AA%A8%EB%8D%B8%20%ED%95%99%EC%8A%B5%22&hl=ko&gl=KR&ceid=KR:ko
+      - https://news.google.com/rss/search?q=%22%ED%97%88%EA%B9%85%ED%8E%98%EC%9D%B4%EC%8A%A4%22&hl=ko&gl=KR&ceid=KR:ko
+    focus: 딥러닝·MLOps·AI 인프라 학습/배포/운영 (server_it_infra의 하드웨어·MSP 측면과 구분, AI 모델·학습·운영 자체에 초점)
+
 forbidden_patterns:
   description: 출력 본문에서 절대 등장 금지. render.py에서 정규식 검사.
   literal:
