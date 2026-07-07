@@ -63,7 +63,12 @@ function simpleToken(pw: string): string {
 export async function checkAndIncrementQuota(ip: string): Promise<{ ok: boolean; remaining: number; limit: number }> {
   const limit = dailyLimit();
   const r = getRedis();
-  const dayKey = new Date().toISOString().slice(0, 10);
+  const dayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
   const key = `zbrief:quota:${dayKey}:${ip}`;
 
   if (r) {
